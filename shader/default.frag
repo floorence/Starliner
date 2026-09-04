@@ -170,7 +170,7 @@ void main() {
         result += calculatePointLight(pointLights[i], texColor, specColor, normal, crntPos, viewDirection);    
 
     // todo: primary light index is always 0 here since that's the only use case but eventually should match the value in LightController
-    vec3 ambient = getAmbientColor(pointLights[0], crntPos) * texColor;
+    vec3 ambient = 0.2 * texColor;
     result += ambient;
 	result = mix(result, tintColor.rgb, tintColor.a);
     
@@ -181,6 +181,10 @@ void main() {
     // float depth = texture(depthMap, fragToLight).r;
     // FragColor = vec4(vec3(depth), 1.0);
 
+    // temporarily disable bloom for non light sources
+    BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+    /*
     // check whether fragment output is higher than threshold, if so output as brightness color
     float brightness = getBrightness(FragColor.rgb);
     if (brightness > 50.0) {
@@ -191,4 +195,5 @@ void main() {
     } else {
         BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
+    */
 }

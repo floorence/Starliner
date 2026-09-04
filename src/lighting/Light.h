@@ -7,10 +7,10 @@
 struct Light {
 public:
     glm::vec3 position, color;
-    float linear, quadratic;
+    float range, linear, quadratic;
 
     Light() = default;
-    Light(float range, glm::vec3 position, glm::vec3 color): position(position), color(color) {
+    Light(float range, glm::vec3 position, glm::vec3 color): position(position), color(color), range(range) {
         calculateAttenuationCoefficients(range);
     }
 private:

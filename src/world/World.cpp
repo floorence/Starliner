@@ -10,6 +10,7 @@ World::World(uint seed, LightController* lc): seed(seed), lc(lc) {
 }
 
 void World::onPlayerPosition(glm::vec3 pos) {
+    playerPos = pos;
     Region newRegion = {
         static_cast<int>(std::floor(pos.x / REGION_SIZE)),
         static_cast<int>(std::floor(pos.y / REGION_SIZE)), 
@@ -52,7 +53,6 @@ void World::onPlayerPosition(glm::vec3 pos) {
     }
 
     playerRegion = newRegion;
-    playerPos = pos;
 }
 
 void World::update(float deltaTime) {

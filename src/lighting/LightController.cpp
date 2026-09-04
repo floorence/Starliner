@@ -71,6 +71,7 @@ void LightController::renderForShadows() {
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
 
     pointLightCam.position = lights[primaryLightSourceIndex].position;
+    pointLightCam.setPerspective(90.0f, 0.1f, lights[primaryLightSourceIndex].range);
     pointLightCam.generateTransforms();
     for (const auto& drawable : drawables) {
         drawable->drawToDepthMap(pointLightCam, depthShader);
@@ -156,6 +157,7 @@ void LightController::adjustBrightness(float deltaTime) {
 }
 
 void LightController::blurBrightAreas() {
+    blurTextures[0].uniform = "image";
     bool horizontal = true;
     for (int i = 0; i < blurAmount; i++) {
         blurFbos[horizontal].bind();
@@ -213,8 +215,6 @@ void LightController::prepareDepthMap() {
     depthMapFbo.checkStatus();
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
-
-    pointLightCam.setPerspective(90.0f, 0.1f, 10.0f);
 
     Utils::unbindFbo();
 }

@@ -124,10 +124,10 @@ int main() {
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
 
-	Text playerDebugText;
-	playerDebugText.setBounds(10, 10, 400, 200);
-	playerDebugText.setFontSize(20);
-	playerDebugText.setCenterText(false);
+	Text debugText;
+	debugText.setBounds(10, 10, 400, 200);
+	debugText.setFontSize(20);
+	debugText.setCenterText(false);
 
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);
@@ -178,8 +178,8 @@ int main() {
 		lc.render(*player.getActiveCamera(), w.deltaTime);
 		glDisable(GL_DEPTH_TEST); // disable for gui drawing
 
-		playerDebugText.setText(player.getDebugString());
-		playerDebugText.draw();
+		debugText.setText(world.getDebugString());
+		debugText.draw();
 		hud.setPerformanceText(w.performanceInfo);
 		hud.draw();
 

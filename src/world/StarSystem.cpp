@@ -1,5 +1,6 @@
 #include "StarSystem.h"
 #include "util/Constants.h"
+#include "util/Log.h"
 #include "util/Utils.h"
 #include "world/World.h"
 
@@ -10,7 +11,7 @@ StarSystem::StarSystem(uint localSeed, Region region)
     // TODO: star mass, colour, luminosity
     star.setColor(glm::vec3(100.0f, 100.0f, 100.0f));
     star.setNorth(generateStarNorth());
-    starLightData = Light(32, star.getPosition(), star.getColor());
+    starLightData = Light(World::REGION_SIZE, star.getPosition(), star.getColor());
 
     generatePlanets();
 }
@@ -63,13 +64,15 @@ void StarSystem::generatePlanets() {
 
     glm::vec3 basePlanetVec = glm::cross(star.getNorth(), Constants::FORWARD);
 
-    int numPlanets = random(0, 10);
+    int numPlanets = 3; // random(0, 5);
     int minDist = World::REGION_SIZE / 16, maxDist = World::REGION_SIZE / 8;
     int currDist = star.radius;
 
+    Log::log("StarSystem", fmt::format("numPlanets: {}", numPlanets));
     for (int i = 0; i < numPlanets; i++) {
         int distLeft = World::REGION_SIZE / 2 - currDist;
         int allowableDist = distLeft - minDist * (numPlanets - i - 1);
+        Log::log("StarSystem", fmt::format("currDist: {}, distLeft: {}, allowableDist: {}", currDist, distLeft, allowableDist));
         int distance = random(minDist, std::min(maxDist, allowableDist));
         currDist += distance;
 
