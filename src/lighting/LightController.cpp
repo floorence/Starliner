@@ -8,9 +8,9 @@
 
 LightController::LightController(int fbWidth, int fbHeight) 
     : fbWidth(fbWidth), fbHeight(fbHeight),
-      depthMapTexture(DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT),
+      depthMapTexture(DEPTH_MAP_SIZE, DEPTH_MAP_SIZE),
       depthShader("shader/depth.vert", "shader/depth.geom", "shader/depth.frag"),
-      pointLightCam(glm::vec3(0.0f), DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT),
+      pointLightCam(glm::vec3(0.0f), DEPTH_MAP_SIZE, DEPTH_MAP_SIZE),
       hdrTexture("hdrBuffer"),
       bloomTexture("image"),
       hdrBloomShader("shader/gui.vert", "shader/hdr_bloom.frag"),
@@ -68,7 +68,7 @@ void LightController::render(Camera& camera, float deltaTime) {
 
 void LightController::renderForShadows() {
     depthMapFbo.bindAndClear();
-    glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
+    glViewport(0, 0, DEPTH_MAP_SIZE, DEPTH_MAP_SIZE);
 
     pointLightCam.position = lights[primaryLightSourceIndex].position;
     pointLightCam.setPerspective(90.0f, 0.1f, lights[primaryLightSourceIndex].range);
@@ -117,17 +117,17 @@ void LightController::adjustBrightness(float deltaTime) {
     // map the buffer pointer directly to CPU memory to read results of the previous frame
     float* src = (float*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
     if (src) {
-        GLubyte r = src[0];
-        GLubyte g = src[1];
-        GLubyte b = src[2];
+        float r = src[0];
+        float g = src[1];
+        float b = src[2];
         
         //Log::log(TAG, fmt::format("average color r: {}, g: {}, b: {}, a: {}", r, g, b, a));
-        float averageBrightness = Utils::getBrightness(r, g, b);
+        float logAvgBrightness = Utils::getBrightness(r, g, b); // TODO
         float newExposure;
-        if (averageBrightness <= 2.0) {
+        if (logAvgBrightness <= 2.0) {
             newExposure = targetExposure;
         } else {
-            newExposure = TARGET_BRIGHTNESS / log(averageBrightness);
+            newExposure = TARGET_BRIGHTNESS / log(logAvgBrightness);
         }
         targetExposure = newExposure;
         if (targetExposure < exposure) {
@@ -136,7 +136,7 @@ void LightController::adjustBrightness(float deltaTime) {
             exposure = std::min(exposure + adaptationSpeed * deltaTime, targetExposure);
         }
         //Log::log(TAG, fmt::format("exposure: {}", exposure));
-        this->debugBrightness = averageBrightness;
+        this->debugBrightness = logAvgBrightness;
         this->debugExposure = newExposure;
 
         hdrBloomShader.setExposure(exposure);
@@ -157,12 +157,16 @@ void LightController::adjustBrightness(float deltaTime) {
 }
 
 void LightController::blurBrightAreas() {
-    blurTextures[0].uniform = "image";
+    blurTextures[0].uniform = "image"; // todo: no reason to not make it bloomBlur in blur shader as well
     bool horizontal = true;
     for (int i = 0; i < blurAmount; i++) {
         blurFbos[horizontal].bind();
         blurShader.setBlurHorizontal(horizontal);
-        blurResult.setTexture((i == 0) ? &bloomTexture : &blurTextures[!horizontal]);
+
+        Texture* texture = (i == 0) ? &bloomTexture : &blurTextures[!horizontal];
+        texture->bind();
+        glGenerateMipmap(GL_TEXTURE_2D);
+        blurResult.setTexture(texture);
         blurResult.draw(blurShader);
         horizontal = !horizontal;
     }
@@ -269,7 +273,7 @@ void LightController::prepareFPTexture(Texture& texture) {
     glTexImage2D(
         GL_TEXTURE_2D, 0, GL_RGBA16F, fbWidth, fbHeight, 0, GL_RGBA, GL_FLOAT, NULL
     );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

@@ -11,7 +11,7 @@ StarSystem::StarSystem(uint localSeed, Region region)
     // TODO: star mass, colour, luminosity
     star.setColor(glm::vec3(100.0f, 100.0f, 100.0f));
     star.setNorth(generateStarNorth());
-    starLightData = Light(World::REGION_SIZE, star.getPosition(), star.getColor());
+    starLightData = Light(World::REGION_SIZE / 2.0, star.getPosition(), star.getColor());
 
     generatePlanets();
 }

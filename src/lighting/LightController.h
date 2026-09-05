@@ -39,7 +39,7 @@ private:
     // stuff for shadows
     bool shadowsEnabled = true;
     int primaryLightSourceIndex = 0; // the light source that casts shadows and affects sky colour
-    const uint DEPTH_MAP_WIDTH = 1024, DEPTH_MAP_HEIGHT = 1024;
+    const uint DEPTH_MAP_SIZE = 2048;
     FBO depthMapFbo;
     CubeMapTexture depthMapTexture;
     Shader depthShader;
