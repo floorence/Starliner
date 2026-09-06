@@ -3,6 +3,7 @@
 #include "util/Log.h"
 #include <algorithm>
 #include <memory>
+#include "GenRandom.h"
 
 World::World(uint seed, LightController* lc): seed(seed), lc(lc) {
     playerRegion = {0, 0, 0};
@@ -95,7 +96,6 @@ void World::update(float deltaTime) {
 
     if (closestStarIndex != -1) {
         lc->setLights(closeStarsLightData, closestStarIndex);
-    } else {
     }
 }
 
@@ -136,7 +136,7 @@ void World::loadIfNotLoaded(Region region) {
     Log::log("World", fmt::format("loading..."));
     
     if (actuallyHasStarSystem(region)) {
-        auto starSystem = std::make_unique<StarSystem>(getRegionSeed(region), region);
+        auto starSystem = std::make_unique<StarSystem>(GenRandom::getRegionSeed(seed, region), region);
         region.starSystem = starSystem.get();
         Log::log("World", fmt::format("star system at region {}, {}, {}, star pos: {}, {}, {}", region.x, region.y, region.z,
             starSystem->starLightData.position.x, starSystem->starLightData.position.y, starSystem->starLightData.position.z));
@@ -148,11 +148,11 @@ void World::loadIfNotLoaded(Region region) {
 }
 
 bool World::potentiallyHasStarSystem(Region region) {
-    return hash01(region, 0) < 0.5;
+    return GenRandom::hash01(seed, region, 0) < 0.5;
 }
 
 double World::getPriority(Region region) {
-    return hash01(region, 1);
+    return GenRandom::hash01(seed, region, 1);
 }
 
 bool World::actuallyHasStarSystem(Region region) {
@@ -176,35 +176,4 @@ bool World::actuallyHasStarSystem(Region region) {
     }
     
     return true;
-}
-
-uint64_t World::splitmix64(uint64_t x) {
-    x += 0x9e3779b97f4a7c15ULL;
-
-    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
-    x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
-    x = x ^ (x >> 31);
-
-    return x;
-}
-
-uint64_t World::hashRegion(Region region, uint64_t salt) {
-    uint64_t h = seed;
-
-    h = splitmix64(h ^ static_cast<uint64_t>(region.x));
-    h = splitmix64(h ^ static_cast<uint64_t>(region.y));
-    h = splitmix64(h ^ static_cast<uint64_t>(region.z));
-    h = splitmix64(h ^ salt);
-
-    return h;
-}
-
-double World::hash01(Region region, uint64_t salt) {
-    uint64_t h = hashRegion(region, salt);
-
-    return static_cast<double>(h) / static_cast<double>(UINT64_MAX);
-}
-
-uint World::getRegionSeed(Region region) {
-    return seed ^ (region.x * 37) ^ (region.y * 67) ^ (region.z * 73); // prime numbers
 }

@@ -27,5 +27,4 @@ private:
     glm::vec3 generateStarPosition(Region region);
     glm::vec3 generateStarNorth();
     void generatePlanets();
-    int random(int min, int max);
 };

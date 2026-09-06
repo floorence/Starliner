@@ -53,11 +53,6 @@ glm::vec3 Utils::setVectorLength(glm::vec3 v, float desiredLength) {
     return (len != desiredLength) ? (v * (desiredLength / len)) : v;
 }
 
-float Utils::randomFloat(float from, float to) {
-    std::uniform_real_distribution<float> dist(from, to);
-    return dist(gen);
-}
-
 float Utils::approach(float from, float to, float amount) {
     if (from > to) {
         from = std::max(to, from - amount);

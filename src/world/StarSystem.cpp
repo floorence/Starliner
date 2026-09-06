@@ -2,14 +2,20 @@
 #include "util/Constants.h"
 #include "util/Log.h"
 #include "util/Utils.h"
+#include "world/GenRandom.h"
 #include "world/World.h"
+using gen = GenRandom;
 
 StarSystem::StarSystem(uint localSeed, Region region)
     : localGen(localSeed),
-      star(generateStarPosition(region), random(World::REGION_SIZE / 16, World::REGION_SIZE / 8))
+      star(generateStarPosition(region), gen::randomFloat(localGen, World::REGION_SIZE / 16.0f, World::REGION_SIZE / 8.0f))
 {
     // TODO: star mass, colour, luminosity
-    star.setColor(glm::vec3(100.0f, 100.0f, 100.0f));
+    star.setColor(glm::vec3(
+        gen::randomFloat(localGen, 75.0f, 100.0f),
+        gen::randomFloat(localGen, 75.0f, 100.0f),
+        gen::randomFloat(localGen, 75.0f, 100.0f)
+    ));
     star.setNorth(generateStarNorth());
     starLightData = Light(World::REGION_SIZE / 2.0, star.getPosition(), star.getColor());
 
@@ -39,17 +45,17 @@ glm::vec3 StarSystem::generateStarPosition(Region region) {
     int startY = region.y * World::REGION_SIZE;
     int startZ = region.z * World::REGION_SIZE;
     
-    int offsetX = random(0, World::REGION_SIZE - 1);
-    int offsetY = random(0, World::REGION_SIZE - 1);
-    int offsetZ = random(0, World::REGION_SIZE - 1);
+    int offsetX = gen::randomInt(localGen, 0, World::REGION_SIZE - 1);
+    int offsetY = gen::randomInt(localGen, 0, World::REGION_SIZE - 1);
+    int offsetZ = gen::randomInt(localGen, 0, World::REGION_SIZE - 1);
 
     return {startX + offsetX, startY + offsetY, startZ + offsetZ};
 }
 
 glm::vec3 StarSystem::generateStarNorth() {
-    int x = random(0, 100);
-    int y = random(0, 100);
-    int z = random(0, 100);
+    float x = gen::randomFloat(localGen, 0, 100);
+    float y = gen::randomFloat(localGen, 0, 100);
+    float z = gen::randomFloat(localGen, 0, 100);
 
     return glm::normalize(glm::vec3(x, y, z));
 }
@@ -65,30 +71,30 @@ void StarSystem::generatePlanets() {
     glm::vec3 basePlanetVec = glm::cross(star.getNorth(), Constants::FORWARD);
 
     int numPlanets = 3; // random(0, 5);
-    int minDist = World::REGION_SIZE / 16, maxDist = World::REGION_SIZE / 8;
-    int currDist = star.radius;
+    float minDist = World::REGION_SIZE / 16.0f, maxDist = World::REGION_SIZE / 8.0f;
+    float currDist = star.radius;
 
     Log::log("StarSystem", fmt::format("numPlanets: {}", numPlanets));
     for (int i = 0; i < numPlanets; i++) {
-        int distLeft = World::REGION_SIZE / 2 - currDist;
-        int allowableDist = distLeft - minDist * (numPlanets - i - 1);
+        float distLeft = World::REGION_SIZE / 2.0f - currDist;
+        float allowableDist = distLeft - minDist * (numPlanets - i - 1);
         Log::log("StarSystem", fmt::format("currDist: {}, distLeft: {}, allowableDist: {}", currDist, distLeft, allowableDist));
-        int distance = random(minDist, std::min(maxDist, allowableDist));
+        float distance = gen::randomFloat(localGen, minDist, std::min(maxDist, allowableDist));
         currDist += distance;
 
-        int radius = random(World::REGION_SIZE / 64, World::REGION_SIZE / 32);
+        float radius = gen::randomFloat(localGen,World::REGION_SIZE / 64.0f, World::REGION_SIZE / 32.0f);
         // rotate each planet by another random amount around star
-        int rotation = random(1, 360);
+        float rotation = gen::randomFloat(localGen, 1.0f, 360.0f);
         glm::vec3 starToPlanet = glm::rotate(basePlanetVec, glm::radians(static_cast<float>(rotation)), star.getNorth());
         starToPlanet = Utils::setVectorLength(starToPlanet, currDist);
 
         Planet planet(star.Mass::position + starToPlanet, radius);
-        planet.setColor(glm::vec3(5.76f, 8.71f, 1.33f)); // TODO
+        // TODO
+        planet.setColor(glm::vec3(
+            gen::randomFloat(localGen, 0.0f, 10.0f),
+            gen::randomFloat(localGen, 0.0f, 10.0f),
+            gen::randomFloat(localGen, 0.0f, 10.0f)
+        ));
         planets.push_back(std::move(planet));
     }
-}
-
-int StarSystem::random(int min, int max) {
-    std::uniform_int_distribution<int> dist(min, max);
-    return dist(localGen);
 }

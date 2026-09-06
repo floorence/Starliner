@@ -2,9 +2,10 @@
 #include "util/Utils.h"
 
 Star::Star(glm::vec3 position, int radius)
-    : Sphere(position, radius, 16, 32, true) 
+    : Sphere(position, radius, 32, 64, true) 
 {
     this->Mass::position = position;
+    northLine.setColor(glm::vec3(100.0f, 0.0f, 69.0f));
 }
 
 glm::vec3 Star::getNorth() {

@@ -52,9 +52,4 @@ private:
     bool potentiallyHasStarSystem(Region region);
     double getPriority(Region region);
     bool actuallyHasStarSystem(Region region);
-    uint getRegionSeed(Region region);
-
-    uint64_t splitmix64(uint64_t x);
-    uint64_t hashRegion(Region region, uint64_t salt);
-    double hash01(Region region, uint64_t salt); // [0, 1) 
 };
