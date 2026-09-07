@@ -8,7 +8,7 @@
 
 LightController::LightController(int fbWidth, int fbHeight) 
     : fbWidth(fbWidth), fbHeight(fbHeight),
-      depthMapTexture(DEPTH_MAP_SIZE, DEPTH_MAP_SIZE),
+      depthMapTexture("depthMap", DEPTH_MAP_SIZE, DEPTH_MAP_SIZE),
       depthShader("shader/depth.vert", "shader/depth.geom", "shader/depth.frag"),
       pointLightCam(glm::vec3(0.0f), DEPTH_MAP_SIZE, DEPTH_MAP_SIZE),
       hdrTexture("hdrBuffer"),
@@ -78,7 +78,7 @@ void LightController::renderForShadows() {
 
     Utils::unbindFboAndClear();
 
-    Globals::DefaultShader->setCubeMapTexture(depthMapTexture, "depthMap", 5);
+    Globals::DefaultShader->setTexture(depthMapTexture, 5);
     Globals::DefaultShader->setFarPlane(pointLightCam.farPlane);
 
     glViewport(0, 0, fbWidth, fbHeight);

@@ -10,7 +10,7 @@ class AssetTexture: public Texture {
 public:
 	TextureType type = TextureType::Diffuse;
 
-	AssetTexture(std::string uniform = "");
+	AssetTexture(std::string uniform);
 
 	virtual ~AssetTexture() = default;
 

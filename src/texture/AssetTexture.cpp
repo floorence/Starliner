@@ -18,8 +18,6 @@ void AssetTexture::setTextureData(unsigned char* bytes, GLenum format, GLenum pi
 	// assigns the image to the OpenGL Texture object
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, pixelType, bytes);
 	glGenerateMipmap(GL_TEXTURE_2D);
-
-	unbind();
 }
 
 AssetTexture::AssetTexture(AssetTexture&& other) noexcept

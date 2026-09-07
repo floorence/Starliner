@@ -91,13 +91,6 @@ void Shader::setShininess(float shininess) {
 	glUniform1f(glGetUniformLocation(ID, "material.shininess"), shininess);
 }
 
-void Shader::setCubeMapTexture(CubeMapTexture& texture, std::string uniform, GLuint unit) {
-	activate();
-
-	glUniform1i(glGetUniformLocation(ID, uniform.c_str()), unit);
-	texture.bind(unit);
-}
-
 void Shader::setProjection(glm::mat4 projection) {
 	activate();
 	glUniformMatrix4fv(glGetUniformLocation(ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
