@@ -84,8 +84,6 @@ void World::update(float deltaTime) {
                             closestStarDist2 = starDist2;
                             closestStarIndex = closeStarsLightData.size() - 1;
                         }
-                    } else {
-                        // Log::warn("World", fmt::format("no star system at {} {} {}", r.x, r.y, r.z));
                     }
                 } else {
                     Log::warn("World", fmt::format("tried to update a region {} {} {} that wasn't loaded!", r.x, r.y, r.z));

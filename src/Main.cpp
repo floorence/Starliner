@@ -122,7 +122,7 @@ int main() {
 	TestRoom testRoom;
 	Log::log(TAG, "Test room initialized");
 
-	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
+	Player player(glm::vec3(0.0f, 45.0f, 0.0f), width, height);
 
 	Text debugText;
 	debugText.setBounds(10, 10, 400, 200);
@@ -150,7 +150,6 @@ int main() {
 	w.registerListeners({&hud, &player, &settingsMenu});
 
 	lc.registerDrawables(testRoom.objects);
-	lc.registerLight(testRoom.lightData);
 	lc.registerDrawable(&player);
 	lc.registerDrawable(&world);
 

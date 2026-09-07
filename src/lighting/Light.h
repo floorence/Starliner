@@ -16,7 +16,7 @@ public:
 private:
     // these are parameters for a best fit power regression model on the values that work well for specified ranges,
     // courtesy of https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
-    // thank you desmos for fitting the model (^_^)
+    // thank you desmos for fitting the model: https://www.desmos.com/calculator/9homov5tyc
     static constexpr float LINEAR_COEFFICIENT = 4.88011;
     static constexpr float LINEAR_POWER = -1.02046;
     static constexpr float QUADRATIC_COEFFICIENT = 87.39333;

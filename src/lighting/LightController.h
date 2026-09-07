@@ -15,11 +15,13 @@ class LightController: public SettingsListener {
 public:
     LightController(int fbWidth, int fbHeight);
 
-    // for drawable light sources, must call registerLight, which will register the light data to upload to shaders,
+    // for drawable light sources, must call setLights, which will store the light data to upload to shaders,
     // and registerDrawable which will store the light to actually be drawn.
-    uint registerLight(Light light); // return light id, which may be used to call setPrimaryLight later
+
+    /**
+     * @param primary index of the primary light source in lights
+     */
     void setLights(std::vector<Light> lights, int primary);
-    
     void registerDrawable(Drawable3D* drawable);
     void registerDrawables(const std::vector<Drawable3D*>& drawables);
     void processLighting();
@@ -82,7 +84,6 @@ private:
     void prepareGaussianBlur();
     void prepareFPTexture(Texture& texture, bool mipmap); // FP = floating point
 
-    // these functions must be called in order each frame
     void renderForShadows();
     void renderForHDRAndBloom(Camera& camera);
     void adjustBrightness(float deltaTime);

@@ -17,6 +17,7 @@ public:
     Shape3D(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, bool isLightSource);
     virtual ~Shape3D() = default;
 
+    // need to explicitly declare because of the explicitly declared destructor, which causes the compiler to not generate these
     Shape3D(const Shape3D&) = delete;
     Shape3D& operator=(const Shape3D&) = delete;
 

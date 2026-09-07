@@ -5,7 +5,7 @@
 class StarSystem;
 
 struct Region {
-    int x, y, z; // coordinate of the corner that is in the negative x, y, and z direction relative to the rest of the region, divided by 100.
+    int x, y, z; // coordinate of the corner that is in the negative x, y, and z direction relative to the rest of the region, divided by World::REGION_SIZE.
     StarSystem* starSystem = nullptr;
 
     bool operator<(const Region& other) const {

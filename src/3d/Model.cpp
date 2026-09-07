@@ -118,6 +118,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         aiColor3D aiColor;
         if (material->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor) == AI_SUCCESS) {
             color = {aiColor.r, aiColor.g, aiColor.b};
+            color *= 10; // there are extremely bright light sources in the world so make models brighter to still be visible
             // Log::log(TAG, fmt::format("color: {}, {}, {}", color.r, color.g, color.b));
         } else {
             Log::warn(TAG, "processMesh() found a mesh without textures or material colours!");

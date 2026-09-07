@@ -16,7 +16,7 @@ StarSystem::StarSystem(uint localSeed, Region region)
         gen::randomFloat(localGen, 75.0f, 100.0f),
         gen::randomFloat(localGen, 75.0f, 100.0f)
     ));
-    Log::log("StarSystem", fmt::format("star colour: ", star.getColor().x, star.getColor().y, star.getColor().z));
+    Log::log("StarSystem", fmt::format("star colour: {}, {}, {}", star.getColor().x, star.getColor().y, star.getColor().z));
     star.setNorth(generateStarNorth());
     starLightData = Light(World::REGION_SIZE / 2.0, star.getPosition(), star.getColor());
 
@@ -62,13 +62,6 @@ glm::vec3 StarSystem::generateStarNorth() {
 }
 
 void StarSystem::generatePlanets() {
-    // planets usually orbit star in the same plane and in the same direction
-    // make vector that's rotated a random amount up and down and a random amount around the star
-    // int rotXDegrees = random(0, 90);
-    // int rotYDegrees = random(0, 180);
-    // glm::vec3 planeVec = glm::rotate(Constants::FORWARD, glm::radians((float) rotXDegrees), Constants::RIGHT);
-    // planeVec = glm::rotate(planeVec, glm::radians((float) rotYDegrees), Constants::UP);
-
     glm::vec3 basePlanetVec = glm::cross(star.getNorth(), Constants::FORWARD);
 
     int numPlanets = 3; // random(0, 5);
@@ -84,7 +77,8 @@ void StarSystem::generatePlanets() {
         currDist += distance;
 
         float radius = gen::randomFloat(localGen,World::REGION_SIZE / 64.0f, World::REGION_SIZE / 32.0f);
-        // rotate each planet by another random amount around star
+
+        // planets usually orbit star in the same plane and in the same direction; rotate each planet by a random amount around star north
         float rotation = gen::randomFloat(localGen, 1.0f, 360.0f);
         glm::vec3 starToPlanet = glm::rotate(basePlanetVec, glm::radians(static_cast<float>(rotation)), star.getNorth());
         starToPlanet = Utils::setVectorLength(starToPlanet, currDist);

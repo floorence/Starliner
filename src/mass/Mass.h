@@ -7,7 +7,7 @@ class Mass {
 public: 
     float mass = 0.0f; // kg
 	glm::vec3 position = glm::vec3(0.0f); // m
-	glm::vec3 velocity = glm::vec3(0.0f);	// m/s
+	glm::vec3 velocity = glm::vec3(0.0f); // m/s
     glm::vec3 acceleration = glm::vec3(0.0f); // m/s^2
 
 	Mass() = default;

@@ -10,6 +10,7 @@ public:
 
     virtual ~Object3D() = default;
 
+    // need to explicitly declare because of the explicitly declared destructor, which causes the compiler to not generate these
     Object3D(const Object3D&) = delete;
     Object3D& operator=(const Object3D&) = delete;
 

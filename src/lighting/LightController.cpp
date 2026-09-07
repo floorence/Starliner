@@ -13,12 +13,12 @@ LightController::LightController(int fbWidth, int fbHeight)
       depthShader("shader/depth.vert", "shader/depth.geom", "shader/depth.frag"),
       pointLightCam(glm::vec3(0.0f), DEPTH_MAP_SIZE, DEPTH_MAP_SIZE),
       hdrTexture("hdrBuffer"),
-      bloomTexture("image"),
+      bloomTexture("bloomBlur"),
       hdrBloomShader("shader/gui.vert", "shader/hdr_bloom.frag"),
-      luminanceTexture("targetMipmap"),
+      luminanceTexture("logLuminance"),
       exposureTextures{{"previousExposure"}, {"previousExposure"}},
-      exposureShader("shader/gui.vert", "shader/exposure.frag"), // TODO, it doesn't need a vertex shader at all
-      blurTextures{{"image"}, {"image"}},
+      exposureShader("shader/gui.vert", "shader/exposure.frag"),
+      blurTextures{{"bloomBlur"}, {"bloomBlur"}},
       blurShader("shader/gui.vert", "shader/blur.frag")
 {
     prepareDepthMap();
@@ -26,11 +26,6 @@ LightController::LightController(int fbWidth, int fbHeight)
     prepareAutoExposure();
     prepareGaussianBlur();
     Utils::checkOpenGlErrors();
-}
-
-uint LightController::registerLight(Light light) {
-    lights.push_back(light);
-    return lights.size() - 1;
 }
 
 void LightController::setLights(std::vector<Light> lights, int primary) {
@@ -124,14 +119,9 @@ void LightController::adjustBrightness(float deltaTime) {
     exposureIndex = !exposureIndex;
     Utils::unbindFbo();
     glViewport(0, 0, fbWidth, fbHeight);
-
-    // exposureShader.setDeltaTime(deltaTime);
-    // exposureResult.setTextures({&luminanceTexture, &exposureTextures[!exposureIndex]});
-    // exposureResult.draw(exposureShader);
 }
 
 void LightController::blurBrightAreas() {
-    blurTextures[0].uniform = "image"; // todo: no reason to not make it bloomBlur in blur shader as well
     bool horizontal = true;
     for (int i = 0; i < blurAmount; i++) {
         blurFbos[horizontal].bind();
@@ -148,9 +138,8 @@ void LightController::blurBrightAreas() {
 }
 
 void LightController::renderForReal() {
-    // since blurAmount is always even we know blurTextures[0] was the last one drawn in blurBrightAreas
-    blurTextures[0].uniform = "bloomBlur";
     exposureTextures[!exposureIndex].uniform = "exposureTex";
+    // since blurAmount is always even we know blurTextures[0] was the last one drawn in blurBrightAreas
     hdrBloomResult.setTextures({&hdrTexture, &blurTextures[0], &exposureTextures[!exposureIndex]});
     hdrBloomResult.draw(hdrBloomShader);
 }

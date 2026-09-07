@@ -85,7 +85,11 @@ float calculateShadow(vec3 fragPos, vec3 normal, vec3 lightPos, bool softShadows
     float currentDepth = length(lightToFrag);
     // float depthScale = (1.0 / farPlane) * currentDepth; 
     float maxBias = 0.05; float minBias = softShadows ? 0.015 : 0.005;
-    float bias = max(maxBias * (1.0 - dot(normal, lightDir)), minBias);
+    float cosTheta = clamp(dot(normal, lightDir), 0.0, 1.0);
+    float angleScale = sqrt(1.0 - cosTheta * cosTheta); // sin(theta)
+    float depthScale = (currentDepth / farPlane) / (1.0 / 3.0); // 1 at depth 1/3 of farPlane
+
+    float bias = max((maxBias * angleScale * depthScale), minBias);
 
     // normal offset
     vec3 biasedFragPos = fragPos + normal * bias;
@@ -152,43 +156,30 @@ float getBrightness(vec3 color) {
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
 
-vec3 getAmbientColor(PointLight light, vec3 fragPos) {
-    float dist = length(fragPos - light.position);
-    vec3 mappedLightColor = light.color / max(max(light.color.r, light.color.g), light.color.b);
-    return mappedLightColor / max((dist * dist), 2.0);
-}
-
 void main() {
 	vec3 normal = normalize(normal);
 	vec3 viewDirection = normalize(camPos - crntPos);
     vec3 texColor = getColorFromSource();
     vec3 specColor = (colorSource == COLOR_SOURCE_TEXTURE) ? vec3(texture(material.specular, texCoord)) : vec3(getBrightness(texColor));
 
-    //	vec3 result = calculateSpotLight(spotLight, normal, crntPos, viewDirection);
 	vec3 result = vec3(0);
 
 	for (int i = 0; i < numPointLights; i++)
         result += calculatePointLight(pointLights[i], texColor, specColor, normal, crntPos, viewDirection);    
 
-    // todo: primary light index is always 0 here since that's the only use case but eventually should match the value in LightController
     vec3 ambient = 0.2 * texColor;
     result += ambient;
 	result = mix(result, tintColor.rgb, tintColor.a);
     
     FragColor = vec4(result, 1.0);
-    // FragColor = vec4(50.0, 0.0, 0.0, 1.0);
 
     // uncomment to see depthMap
     // vec3 fragToLight = crntPos - pointLights[0].position;
     // float depth = texture(depthMap, fragToLight).r;
     // FragColor = vec4(vec3(depth), 1.0);
 
-    // temporarily disable bloom for non light sources
-    BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
-
     LogLuminance = vec4(log(0.001 + getBrightness(FragColor.rgb)), 0.0, 0.0, 1.0);
 
-    /*
     // check whether fragment output is higher than threshold, if so output as brightness color
     float brightness = getBrightness(FragColor.rgb);
     if (brightness > 50.0) {
@@ -199,5 +190,7 @@ void main() {
     } else {
         BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
-    */
+
+    // uncomment to temporarily disable bloom for non light sources
+    // BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 }
