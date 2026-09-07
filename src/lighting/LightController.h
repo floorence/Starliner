@@ -69,7 +69,7 @@ private:
     int blurAmount = 10;
 
     // window resizing
-    Texture* windowSizeTextures[4] = {&hdrTexture, &bloomTexture, &blurTextures[0], &blurTextures[1]};
+    Texture* windowSizeTextures[5] = {&hdrTexture, &bloomTexture, &luminanceTexture, &blurTextures[0], &blurTextures[1]};
     FBO* windowSizeFbos[3] = {&hdrBloomFbo, &blurFbos[0], &blurFbos[1]};
 
     // debug vars
@@ -80,7 +80,7 @@ private:
     void prepareHdrAndBloom();
     void prepareAutoExposure();
     void prepareGaussianBlur();
-    void prepareFPTexture(Texture& texture); // FP = floating point
+    void prepareFPTexture(Texture& texture, bool mipmap); // FP = floating point
 
     // these functions must be called in order each frame
     void renderForShadows();

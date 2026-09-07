@@ -160,18 +160,18 @@ void LightController::onFrameBufferSizeChanged(int newWidth, int newHeight) {
     fbHeight = newHeight;
     // view port is updated in renderForShadows
 
-    for (int i = 0; i < 4; i++) {
-        windowSizeTextures[i]->bind();
+    for (auto& texture: windowSizeTextures) {
+        texture->bind();
         glTexImage2D(
-            GL_TEXTURE_2D, 0, GL_RGBA16F, fbWidth, fbHeight, 0, GL_RGBA, GL_FLOAT, NULL
+            GL_TEXTURE_2D, 0, GL_RGBA16F, fbWidth, fbHeight, 0, GL_RGBA, GL_FLOAT, nullptr
         );
     }
     glBindRenderbuffer(GL_RENDERBUFFER, rboID);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, fbWidth, fbHeight);
 
-    for (int i = 0; i < 3; i++) {
-        windowSizeFbos[i]->bind();
-        windowSizeFbos[i]->checkStatus();
+    for (auto& fbo: windowSizeFbos) {
+        fbo->bind();
+        fbo->checkStatus();
     }
     Utils::unbindFbo();
 }
@@ -200,10 +200,9 @@ void LightController::prepareDepthMap() {
 
 void LightController::prepareHdrAndBloom() {
     // create floating point color buffer
-    prepareFPTexture(hdrTexture);
-    prepareFPTexture(bloomTexture);
-    prepareFPTexture(luminanceTexture); // TODO, could use GL_RED
-    hdrTexture.bind(); // TODO why is this here??
+    prepareFPTexture(hdrTexture, false);
+    prepareFPTexture(bloomTexture, true);
+    prepareFPTexture(luminanceTexture, true);
     // create depth buffer (renderbuffer) THIS IS NEEDED TO RESOLVE DEPTHS!!! (texture only does colours)
     glGenRenderbuffers(1, &rboID);
     glBindRenderbuffer(GL_RENDERBUFFER, rboID);
@@ -217,8 +216,6 @@ void LightController::prepareHdrAndBloom() {
     // configure fbo for 3 colour attachments
     unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, attachments); 
-    // unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    // glDrawBuffers(2, attachments); 
     hdrBloomFbo.checkStatus();
     Utils::unbindFbo();
 
@@ -245,7 +242,7 @@ void LightController::prepareAutoExposure() {
 
 void LightController::prepareGaussianBlur() {
     for (uint i = 0; i < 2; i++) {
-        prepareFPTexture(blurTextures[i]);
+        prepareFPTexture(blurTextures[i], true);
         blurFbos[i].bind();
         blurFbos[i].attachTexture2D(blurTextures[i].ID);
         blurFbos[i].checkStatus();
@@ -256,12 +253,12 @@ void LightController::prepareGaussianBlur() {
     blurResult.setCorners(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 
-void LightController::prepareFPTexture(Texture& texture) {
+void LightController::prepareFPTexture(Texture& texture, bool mipmap) {
     texture.bind();
     glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_RGBA16F, fbWidth, fbHeight, 0, GL_RGBA, GL_FLOAT, NULL
+        GL_TEXTURE_2D, 0, GL_RGBA16F, fbWidth, fbHeight, 0, GL_RGBA, GL_FLOAT, nullptr
     );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mipmap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

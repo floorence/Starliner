@@ -23,7 +23,7 @@ void main() {
     FragColor = vec4(result, 1.0);
 
     // uncomment to see hdrColor
-    FragColor = vec4(hdrColor, 1.0);
+    // FragColor = vec4(hdrColor, 1.0);
 
     // uncomment to see bloom blur
     // FragColor = vec4(bloomColor, 1.0);
