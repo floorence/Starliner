@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(Platformer)
+project(Starliner)
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
@@ -15,24 +15,24 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
     "src/*.c"
 )
 
-add_executable(Platformer ${SOURCE_FILES})
+add_executable(Starliner ${SOURCE_FILES})
 
-target_include_directories(Platformer PRIVATE
+target_include_directories(Starliner PRIVATE
     src
 )
 
-target_include_directories(Platformer SYSTEM PRIVATE
+target_include_directories(Starliner SYSTEM PRIVATE
     Libraries/include
 )
 
-target_link_libraries(Platformer PRIVATE
+target_link_libraries(Starliner PRIVATE
     OpenGL::GL
     glfw
     fmt::fmt
     assimp::assimp
 )
 
-target_compile_options(Platformer PRIVATE
+target_compile_options(Starliner PRIVATE
     -Wall
     -Wextra
     -Wpedantic
@@ -41,7 +41,7 @@ target_compile_options(Platformer PRIVATE
     -g
 )
 
-target_link_options(Platformer PRIVATE
+target_link_options(Starliner PRIVATE
     -fsanitize=address
     -fsanitize=undefined
 )

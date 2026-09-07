@@ -1,11 +1,13 @@
-# this is a WIP OpenGL exploration project! I don't know what it'll become yet!
+# Starliner
+
+3D space exporation game using OpenGL 
 
 ## Setup
 
 Prerequisites: 
 * computer on Linux, MacOS, or Windows
 * C and C++ compiler. the project compiles in C++17 or above
-* the following installed on your system. all other dependencies (glad, glfw, glm, khr, and stb) are header files in the project source (which you will get when you clone the repo)
+* the following installed on your system. all other dependencies (glad, glfw, glm, json, khr, and stb) are header files in the project source (which you will get when you clone the repo)
     * cmake 
     * OpenGL
     * fmt
@@ -25,9 +27,12 @@ note: depending on your system, AddressSanitizer can be annoying and report a bu
 
 ## Resources and attributions
 
+### 3D models
+
 Spaceship model from:
 Spaceship by Liz Reddington [© CC-BY](https://creativecommons.org/licenses/by/3.0/) via [Poly Pizza](https://poly.pizza/m/5nWeu4IQXVX)
 
+### Learning resources
 Without people way smarter than me making tutorials and providing open source code examples, this project would not have been possible in a reasonable time frame, or be vibecoded :vomiting_face:
 
 places in my code that have been adapted from the below resources are clearly marked as such.
