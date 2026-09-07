@@ -1,13 +1,14 @@
 #pragma once
 
 #include "3d/shape/RectangularPrism.h"
-#include "3d/shape/Shape3D.h"
 #include "3d/shape/Sphere.h"
+#include "lighting/Light.h"
 #include "texture/ImageTexture.h"
 
 class TestRoom {
 public:
-	std::vector<Shape3D*> objects;
+	std::vector<Drawable3D*> objects;
+    Light lightData;
 
     TestRoom();
 private:

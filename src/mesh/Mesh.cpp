@@ -1,5 +1,4 @@
 #include "Mesh.h"
-#include <string>
 #include "util/Log.h"
 #include "util/Utils.h"
 

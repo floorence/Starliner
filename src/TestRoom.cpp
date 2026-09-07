@@ -22,6 +22,7 @@ TestRoom::TestRoom()
 
 	rect.setRotation(0, 0, glm::radians(180.0f));
 	floorLight.setColor(glm::vec3(100.0f, 100.0f, 100.0f));
+	lightData = Light(10, floorLight.getPosition(), floorLight.getColor());
 
 	// RectangularPrism backWall(&stoneDiffuse, &stoneSpecular, glm::vec3(0.0f, 1.3f, 2.5f), 5.0f, 5.0f, 0.1f);
 	// RectangularPrism frontWall(&stoneDiffuse, &stoneSpecular, glm::vec3(0.0f, 1.3f, -2.5f), 5.0f, 5.0f, 0.1f);

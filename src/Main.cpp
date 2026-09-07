@@ -16,6 +16,7 @@
 #include "util/Globals.h"
 #include "util/Log.h"
 #include "mass/Player.h"
+#include "world/World.h"
 
 // initial window dimensions, which might not match what will be loaded from save
 const unsigned int width = 800;
@@ -121,12 +122,12 @@ int main() {
 	TestRoom testRoom;
 	Log::log(TAG, "Test room initialized");
 
-	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
+	Player player(glm::vec3(0.0f, 45.0f, 0.0f), width, height);
 
-	Text playerDebugText;
-	playerDebugText.setBounds(10, 10, 400, 200);
-	playerDebugText.setFontSize(20);
-	playerDebugText.setCenterText(false);
+	Text debugText;
+	debugText.setBounds(10, 10, 400, 200);
+	debugText.setFontSize(20);
+	debugText.setCenterText(false);
 
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);
@@ -137,6 +138,8 @@ int main() {
 	LightController lc(fbWidth, fbHeight);
 	ClickController cc;
 
+	World world(67, &lc);
+
 	// set pointers used in glfw callbacks
 	windowPtr = &w;
 	playerPtr = &player;
@@ -145,13 +148,13 @@ int main() {
 
 	// register listeners, shapes, and drawables
 	w.registerListeners({&hud, &player, &settingsMenu});
-	lc.registerShapes(testRoom.objects);
+
+	lc.registerDrawables(testRoom.objects);
 	lc.registerDrawable(&player);
+	lc.registerDrawable(&world);
+
 	sc.registerListeners({&settingsMenu, &lc, &player, &w});
 	cc.registerListeners({&hud, &settingsMenu});
-	
-	lc.processLighting();
-	Log::log(TAG, "initial lighting processing completed");
 
 	sc.load();
 	Log::log(TAG, "settings loaded from save");
@@ -164,13 +167,15 @@ int main() {
 		w.startFrame();
 
 		player.handleKeyInputs(window, w.deltaTime);
+		world.onPlayerPosition(player.position);
+		world.update(w.deltaTime);
 
 		glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 		lc.render(*player.getActiveCamera(), w.deltaTime);
 		glDisable(GL_DEPTH_TEST); // disable for gui drawing
 
-		playerDebugText.setText(player.getDebugString());
-		playerDebugText.draw();
+		debugText.setText(world.getDebugString());
+		debugText.draw();
 		hud.setPerformanceText(w.performanceInfo);
 		hud.draw();
 

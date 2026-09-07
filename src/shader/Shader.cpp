@@ -138,8 +138,14 @@ void Shader::setRotation(glm::mat4 rotation) {
 	glUniformMatrix4fv(glGetUniformLocation(ID, "rotation"), 1, GL_FALSE, glm::value_ptr(rotation));
 }
 
+void Shader::setDeltaTime(float deltaTime) {
+	activate();
+	glUniform1f(glGetUniformLocation(ID, "deltaTime"), deltaTime);
+}
+
 void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {
-    Log::log(TAG, fmt::format("registerLightSource() num = {} linear = {}, quadratic = {}", num, linear, quadratic));
+	// Log::log(TAG, fmt::format("registerLightSource, num: {}, color: {}, {}, {}, pos: {}, {}, {}",
+	// 	num, lightColor.x, lightColor.y, lightColor.z, lightPos.x, lightPos.y, lightPos.z));
     activate();
 
     std::string pointLightUniform = "pointLights[0]";

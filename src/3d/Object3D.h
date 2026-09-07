@@ -10,6 +10,13 @@ public:
 
     virtual ~Object3D() = default;
 
+    // need to explicitly declare because of the explicitly declared destructor, which causes the compiler to not generate these
+    Object3D(const Object3D&) = delete;
+    Object3D& operator=(const Object3D&) = delete;
+
+    Object3D(Object3D&&) noexcept = default;
+    Object3D& operator=(Object3D&&) noexcept = default;
+
     glm::vec3 getPosition();
     void setPosition(glm::vec3 position);
     void rotate(float angle, glm::vec3 axis);
@@ -44,8 +51,6 @@ protected:
     glm::vec3 scale = glm::vec3(1.0f);
 
     glm::mat4 defaultRotation = glm::mat4(1.0f);
-
-    const std::string TAG = "Object3D";
 
     virtual void preDraw() override;
     virtual void preDrawToDepthMap(Shader& depthShader) override;

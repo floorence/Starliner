@@ -27,7 +27,7 @@ public:
 	void draw(Camera& camera) override;
 	void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 private:
-	const float ACCELERATION_MULTIPLIER = 1.0f;
+	const float FORCE_MULTIPLIER = 5.0f;
 	const float TILT_TURN_SPEED = glm::radians(45.0f); // radians per second
 	const float TILT_MAX = glm::radians(45.0f); // radians
 	const float TRAIL_POINT_PERIOD = 1.0f / 70.0f; // seconds. not using 1/60 since will be weird if vsync is on

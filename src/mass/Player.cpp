@@ -83,7 +83,7 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	}
 
 	if (force != glm::vec3(0.0, 0.0, 0.0)) {
-		force = 2.0f * glm::normalize(force);
+		force = FORCE_MULTIPLIER * glm::normalize(force);
 		applyForce(force);
 	}
 	glm::vec3 movement = updatePosition(deltaTime);

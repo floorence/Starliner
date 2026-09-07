@@ -44,6 +44,7 @@ public:
 	void setShadowQuality(int quality); // default.frag
 	void setColorSource(ColorSource source); // default.frag, gui.frag
 	void setRotation(glm::mat4 rotation); // default.vert
+	void setDeltaTime(float deltaTime); // exposure.frag
 
     void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic); // default.frag
     void setNumPointLights(int num); // default.frag

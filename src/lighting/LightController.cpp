@@ -1,39 +1,35 @@
 #include "LightController.h"
+#include "camera/Camera.h"
 #include "camera/PointLightCamera.h"
 #include "texture/CubeMapTexture.h"
 #include "util/Globals.h"
 #include "util/Log.h"
 #include "util/Utils.h"
-#include <cmath>
 
 LightController::LightController(int fbWidth, int fbHeight) 
     : fbWidth(fbWidth), fbHeight(fbHeight),
-      depthMapTexture(DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT),
+      depthMapTexture(DEPTH_MAP_SIZE, DEPTH_MAP_SIZE),
       depthShader("shader/depth.vert", "shader/depth.geom", "shader/depth.frag"),
-      pointLightCam(glm::vec3(0.0f), DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT),
+      pointLightCam(glm::vec3(0.0f), DEPTH_MAP_SIZE, DEPTH_MAP_SIZE),
       hdrTexture("hdrBuffer"),
-      bloomTexture("image"),
+      bloomTexture("bloomBlur"),
       hdrBloomShader("shader/gui.vert", "shader/hdr_bloom.frag"),
-      blurTextures{{"image"}, {"image"}},
+      luminanceTexture("logLuminance"),
+      exposureTextures{{"previousExposure"}, {"previousExposure"}},
+      exposureShader("shader/gui.vert", "shader/exposure.frag"),
+      blurTextures{{"bloomBlur"}, {"bloomBlur"}},
       blurShader("shader/gui.vert", "shader/blur.frag")
 {
     prepareDepthMap();
     prepareHdrAndBloom();
-    prepareAvgColorBuffer();
+    prepareAutoExposure();
     prepareGaussianBlur();
+    Utils::checkOpenGlErrors();
 }
 
-void LightController::registerShape(Shape3D* shape) {
-    if (shape->isLightSource)
-        lights.push_back(shape);
-    else
-        drawables.push_back(shape);
-}
-
-void LightController::registerShapes(const std::vector<Shape3D*>& shapes) {
-    for (const auto& shape :shapes) {
-        registerShape(shape);
-    }
+void LightController::setLights(std::vector<Light> lights, int primary) {
+    this->lights = lights;
+    primaryLightSourceIndex = primary;
 }
 
 void LightController::registerDrawable(Drawable3D* drawable) {
@@ -48,14 +44,11 @@ void LightController::processLighting() {
     int numPointLights = 0;
 
     for (const auto& light: lights) {
-        float linear, quadratic;
-        float intensity = Utils::getBrightness(light->getColor()) / 10;
-        calculateAttenuationCoefficients(intensity, &linear, &quadratic);
         Globals::DefaultShader->registerLightSource(
             numPointLights,
-            light->getColor(),
-            light->getPosition(),
-            linear, quadratic
+            light.color,
+            light.position,
+            light.linear, light.quadratic
         );
         numPointLights++;
     }
@@ -64,6 +57,7 @@ void LightController::processLighting() {
 }
 
 void LightController::render(Camera& camera, float deltaTime) {
+    processLighting();
     if (shadowsEnabled) renderForShadows();
     renderForHDRAndBloom(camera);
     adjustBrightness(deltaTime);
@@ -73,9 +67,10 @@ void LightController::render(Camera& camera, float deltaTime) {
 
 void LightController::renderForShadows() {
     depthMapFbo.bindAndClear();
-    glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
+    glViewport(0, 0, DEPTH_MAP_SIZE, DEPTH_MAP_SIZE);
 
-    pointLightCam.position = lights[primaryLightSourceIndex]->getPosition();
+    pointLightCam.position = lights[primaryLightSourceIndex].position;
+    pointLightCam.setPerspective(90.0f, 0.1f, lights[primaryLightSourceIndex].range);
     pointLightCam.generateTransforms();
     for (const auto& drawable : drawables) {
         drawable->drawToDepthMap(pointLightCam, depthShader);
@@ -104,64 +99,25 @@ void LightController::renderForHDRAndBloom(Camera& camera) {
         drawable->draw(camera);
     }
 
-    for (const auto& light: lights) {
-        light->draw(camera);
-    }
-
     Utils::unbindFboAndClear();
 }
 
 void LightController::adjustBrightness(float deltaTime) {
-    hdrTexture.bind();
+    luminanceTexture.bind();
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    int highestMipLevel = floor(log2(std::max(fbWidth, fbHeight)));
+    exposureFbos[exposureIndex].bind();
+    glViewport(0, 0, 1, 1);
 
-    int nextIndex = pboIndex;
-    int currentIndex = (pboIndex + 1) % 2; 
-    pboIndex = currentIndex;
-    pbos[pboIndex].bind();
-    
-    // map the buffer pointer directly to CPU memory to read results of the previous frame
-    float* src = (float*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
-    if (src) {
-        GLubyte r = src[0];
-        GLubyte g = src[1];
-        GLubyte b = src[2];
-        
-        //Log::log(TAG, fmt::format("average color r: {}, g: {}, b: {}, a: {}", r, g, b, a));
-        float averageBrightness = Utils::getBrightness(r, g, b);
-        float newExposure;
-        if (averageBrightness <= 2.0) {
-            newExposure = targetExposure;
-        } else {
-            newExposure = TARGET_BRIGHTNESS / log(averageBrightness);
-        }
-        targetExposure = newExposure;
-        if (targetExposure < exposure) {
-            exposure = std::max(exposure - adaptationSpeed * deltaTime, targetExposure);
-        } else {
-            exposure = std::min(exposure + adaptationSpeed * deltaTime, targetExposure);
-        }
-        //Log::log(TAG, fmt::format("exposure: {}", exposure));
-        this->debugBrightness = averageBrightness;
-        this->debugExposure = newExposure;
+    // draw with the other exposure index's texture to produce current exposure index's texture
+    exposureShader.setDeltaTime(deltaTime);
+    exposureTextures[!exposureIndex].uniform = "previousExposure";
+    exposureResult.setTextures({&luminanceTexture, &exposureTextures[!exposureIndex]});
+    exposureResult.draw(exposureShader);
 
-        hdrBloomShader.setExposure(exposure);
-
-        glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-    } else {
-        Log::err(TAG, fmt::format("failed to read average color buffer!"));
-        Utils::checkOpenGlErrors();
-    }
-
-    pbos[nextIndex].bind();
-
-    // trigger the gpu transfer for the current frame
-    // when a PBO is bound, the last argument is byte offset inside the PBO, rather than a pointer to cpu memory, it returns immediately.
-    glGetTexImage(GL_TEXTURE_2D, highestMipLevel, GL_RGBA, GL_FLOAT, 0);
-
-    Utils::unbindPbo();
+    exposureIndex = !exposureIndex;
+    Utils::unbindFbo();
+    glViewport(0, 0, fbWidth, fbHeight);
 }
 
 void LightController::blurBrightAreas() {
@@ -169,7 +125,11 @@ void LightController::blurBrightAreas() {
     for (int i = 0; i < blurAmount; i++) {
         blurFbos[horizontal].bind();
         blurShader.setBlurHorizontal(horizontal);
-        blurResult.setTexture((i == 0) ? &bloomTexture : &blurTextures[!horizontal]);
+
+        Texture* texture = (i == 0) ? &bloomTexture : &blurTextures[!horizontal];
+        texture->bind();
+        glGenerateMipmap(GL_TEXTURE_2D);
+        blurResult.setTexture(texture);
         blurResult.draw(blurShader);
         horizontal = !horizontal;
     }
@@ -177,9 +137,9 @@ void LightController::blurBrightAreas() {
 }
 
 void LightController::renderForReal() {
+    exposureTextures[!exposureIndex].uniform = "exposureTex";
     // since blurAmount is always even we know blurTextures[0] was the last one drawn in blurBrightAreas
-    blurTextures[0].uniform = "bloomBlur";
-    hdrBloomResult.setTextures({&hdrTexture, &blurTextures[0]});
+    hdrBloomResult.setTextures({&hdrTexture, &blurTextures[0], &exposureTextures[!exposureIndex]});
     hdrBloomResult.draw(hdrBloomShader);
 }
 
@@ -188,18 +148,18 @@ void LightController::onFrameBufferSizeChanged(int newWidth, int newHeight) {
     fbHeight = newHeight;
     // view port is updated in renderForShadows
 
-    for (int i = 0; i < 4; i++) {
-        windowSizeTextures[i]->bind();
+    for (auto& texture: windowSizeTextures) {
+        texture->bind();
         glTexImage2D(
-            GL_TEXTURE_2D, 0, GL_RGBA16F, fbWidth, fbHeight, 0, GL_RGBA, GL_FLOAT, NULL
+            GL_TEXTURE_2D, 0, GL_RGBA16F, fbWidth, fbHeight, 0, GL_RGBA, GL_FLOAT, nullptr
         );
     }
     glBindRenderbuffer(GL_RENDERBUFFER, rboID);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, fbWidth, fbHeight);
 
-    for (int i = 0; i < 3; i++) {
-        windowSizeFbos[i]->bind();
-        windowSizeFbos[i]->checkStatus();
+    for (auto& fbo: windowSizeFbos) {
+        fbo->bind();
+        fbo->checkStatus();
     }
     Utils::unbindFbo();
 }
@@ -223,16 +183,14 @@ void LightController::prepareDepthMap() {
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
 
-    pointLightCam.setPerspective(90.0f, 0.1f, 10.0f);
-
     Utils::unbindFbo();
 }
 
 void LightController::prepareHdrAndBloom() {
     // create floating point color buffer
-    prepareFPTexture(hdrTexture);
-    prepareFPTexture(bloomTexture);
-    hdrTexture.bind();
+    prepareFPTexture(hdrTexture, false);
+    prepareFPTexture(bloomTexture, true);
+    prepareFPTexture(luminanceTexture, true);
     // create depth buffer (renderbuffer) THIS IS NEEDED TO RESOLVE DEPTHS!!! (texture only does colours)
     glGenRenderbuffers(1, &rboID);
     glBindRenderbuffer(GL_RENDERBUFFER, rboID);
@@ -241,10 +199,11 @@ void LightController::prepareHdrAndBloom() {
     hdrBloomFbo.bind();
     hdrBloomFbo.attachTexture2D(hdrTexture.ID, 0);
     hdrBloomFbo.attachTexture2D(bloomTexture.ID, 1);
+    hdrBloomFbo.attachTexture2D(luminanceTexture.ID, 2);
     hdrBloomFbo.attachRenderBuffer(rboID);
-    // configure fbo for 2 colour attachments
-    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    glDrawBuffers(2, attachments); 
+    // configure fbo for 3 colour attachments
+    unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    glDrawBuffers(3, attachments); 
     hdrBloomFbo.checkStatus();
     Utils::unbindFbo();
 
@@ -253,19 +212,28 @@ void LightController::prepareHdrAndBloom() {
     hdrBloomResult.setCorners(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 
-void LightController::prepareAvgColorBuffer() {
-    for (int i = 0; i < 2; i++) {
-        pbos[i].bind();
-        glBufferData(GL_PIXEL_PACK_BUFFER, sizeof(float) * 4, nullptr, GL_STREAM_READ); // 4 float = 1 pixel rgba float
+void LightController::prepareAutoExposure() {
+    float initialExposure = 1.0f;
+    for (uint i = 0; i < 2; i++) {
+        exposureTextures[i].bind();
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, GL_R16F, 1, 1, 0, GL_RED, GL_FLOAT, &initialExposure
+        );
+        exposureFbos[i].bind();
+        exposureFbos[i].attachTexture2D(exposureTextures[i].ID);
+        exposureFbos[i].checkStatus();
     }
-    Utils::unbindPbo();
+    exposureShader.setProjection(glm::mat4(1.0f));
+    exposureResult.disableDimensionsProcessing = true;
+    exposureResult.setCorners(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 
 void LightController::prepareGaussianBlur() {
     for (uint i = 0; i < 2; i++) {
-        prepareFPTexture(blurTextures[i]);
+        prepareFPTexture(blurTextures[i], true);
         blurFbos[i].bind();
         blurFbos[i].attachTexture2D(blurTextures[i].ID);
+        blurFbos[i].checkStatus();
     }
 
     blurShader.setProjection(glm::mat4(1.0f));
@@ -273,26 +241,21 @@ void LightController::prepareGaussianBlur() {
     blurResult.setCorners(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 
-void LightController::prepareFPTexture(Texture& texture) {
+void LightController::prepareFPTexture(Texture& texture, bool mipmap) {
     texture.bind();
     glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_RGBA16F, fbWidth, fbHeight, 0, GL_RGBA, GL_FLOAT, NULL
+        GL_TEXTURE_2D, 0, GL_RGBA16F, fbWidth, fbHeight, 0, GL_RGBA, GL_FLOAT, nullptr
     );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mipmap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
-void LightController::calculateAttenuationCoefficients(float range, float* linear, float* quadratic) {
-    *linear = LINEAR_COEFFICIENT * pow(range, LINEAR_POWER);
-    *quadratic = QUADRATIC_COEFFICIENT * pow(range, QUADRATIC_POWER);
-}
-
 glm::vec3 LightController::getSkyColor(Camera& camera) {
-    Shape3D* light = lights[primaryLightSourceIndex];
-    float dist = glm::length(camera.position - light->getPosition());
-    glm::vec3 c = light->getColor();
+    Light light = lights[primaryLightSourceIndex];
+    float dist = glm::length(camera.position - light.position);
+    glm::vec3 c = light.position;
     glm::vec3 mappedLightColor = c / std::max(std::max(c.r, c.g), c.b);
     return mappedLightColor / std::max((dist * dist), 2.0f);
 }

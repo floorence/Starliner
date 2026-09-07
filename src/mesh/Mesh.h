@@ -35,7 +35,5 @@ private:
 
 	Material material;
 
-	const std::string TAG = "Mesh";
-
 	void prepareColorsAndTextures(Shader& shader);
 };

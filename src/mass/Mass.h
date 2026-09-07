@@ -5,10 +5,12 @@
 
 class Mass {
 public: 
-    float mass; // kg
-	glm::vec3 position; // m
-	glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);	// m/s
-    glm::vec3 acceleration = glm::vec3(0.0f, 0.0f, 0.0f); // m/s^2
+    float mass = 0.0f; // kg
+	glm::vec3 position = glm::vec3(0.0f); // m
+	glm::vec3 velocity = glm::vec3(0.0f); // m/s
+    glm::vec3 acceleration = glm::vec3(0.0f); // m/s^2
+
+	Mass() = default;
 
 	void applyForce(glm::vec3 f); // DOES NOT actually move the mass. call updatePosition to do so.
 
