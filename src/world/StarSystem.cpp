@@ -64,7 +64,7 @@ glm::vec3 StarSystem::generateStarNorth() {
 void StarSystem::generatePlanets() {
     glm::vec3 basePlanetVec = glm::cross(star.getNorth(), Constants::FORWARD);
 
-    int numPlanets = 3; // random(0, 5);
+    int numPlanets = gen::randomInt(localGen, 0, 5);
     float minDist = World::REGION_SIZE / 16.0f, maxDist = World::REGION_SIZE / 8.0f;
     float currDist = star.radius;
 

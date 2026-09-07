@@ -155,9 +155,6 @@ int main() {
 
 	sc.registerListeners({&settingsMenu, &lc, &player, &w});
 	cc.registerListeners({&hud, &settingsMenu});
-	
-	lc.processLighting();
-	Log::log(TAG, "initial lighting processing completed");
 
 	sc.load();
 	Log::log(TAG, "settings loaded from save");

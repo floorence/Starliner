@@ -2,7 +2,6 @@
 
 #include "lighting/FBO.h"
 #include "lighting/Light.h"
-#include "lighting/PBO.h"
 #include "settings/SettingsListener.h"
 #include "gui/framework/Quad.h"
 #include "3d/Drawable3D.h"
@@ -24,7 +23,6 @@ public:
     void setLights(std::vector<Light> lights, int primary);
     void registerDrawable(Drawable3D* drawable);
     void registerDrawables(const std::vector<Drawable3D*>& drawables);
-    void processLighting();
 
     void render(Camera& camera, float deltaTime);
 
@@ -84,6 +82,7 @@ private:
     void prepareGaussianBlur();
     void prepareFPTexture(Texture& texture, bool mipmap); // FP = floating point
 
+    void processLighting();
     void renderForShadows();
     void renderForHDRAndBloom(Camera& camera);
     void adjustBrightness(float deltaTime);

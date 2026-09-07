@@ -5,7 +5,6 @@
 #include "util/Globals.h"
 #include "util/Log.h"
 #include "util/Utils.h"
-#include <cmath>
 
 LightController::LightController(int fbWidth, int fbHeight) 
     : fbWidth(fbWidth), fbHeight(fbHeight),
