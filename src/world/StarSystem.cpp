@@ -16,6 +16,7 @@ StarSystem::StarSystem(uint localSeed, Region region)
         gen::randomFloat(localGen, 75.0f, 100.0f),
         gen::randomFloat(localGen, 75.0f, 100.0f)
     ));
+    Log::log("StarSystem", fmt::format("star colour: ", star.getColor().x, star.getColor().y, star.getColor().z));
     star.setNorth(generateStarNorth());
     starLightData = Light(World::REGION_SIZE / 2.0, star.getPosition(), star.getColor());
 

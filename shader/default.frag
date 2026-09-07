@@ -7,6 +7,7 @@
 
 layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec4 BrightColor;
+layout (location = 2) out vec4 LogLuminance;
 
 // These values must match those in enum class ColorSource in Shader.h!!!
 const int COLOR_SOURCE_TEXTURE = 0;
@@ -175,6 +176,7 @@ void main() {
 	result = mix(result, tintColor.rgb, tintColor.a);
     
     FragColor = vec4(result, 1.0);
+    // FragColor = vec4(50.0, 0.0, 0.0, 1.0);
 
     // uncomment to see depthMap
     // vec3 fragToLight = crntPos - pointLights[0].position;
@@ -183,6 +185,8 @@ void main() {
 
     // temporarily disable bloom for non light sources
     BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+    LogLuminance = vec4(log(0.001 + getBrightness(FragColor.rgb)), 0.0, 0.0, 1.0);
 
     /*
     // check whether fragment output is higher than threshold, if so output as brightness color

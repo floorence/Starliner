@@ -52,14 +52,15 @@ private:
     GLuint rboID;
     Shader hdrBloomShader;
     Quad hdrBloomResult;
-    // average colour buffer
-    PBO pbos[2];
-    int pboIndex = 0;
-    float exposure = 1.0f;
-    float targetExposure = 1.0f;
-    float adaptationDelay = 0.5f; // seconds
-    float adaptationSpeed = 0.2f; // exposure per second
-    const float TARGET_BRIGHTNESS = 0.18f;
+
+    // auto exposure adjustment
+    FBO exposureFbos[2];
+    Texture luminanceTexture;
+    Texture exposureTextures[2]; // one previous and one current
+    Shader exposureShader;
+    Quad exposureResult;
+    bool exposureIndex = false;
+
     // gaussian blur
     FBO blurFbos[2];
     Texture blurTextures[2];
@@ -77,7 +78,7 @@ private:
 
     void prepareDepthMap();
     void prepareHdrAndBloom();
-    void prepareAvgColorBuffer();
+    void prepareAutoExposure();
     void prepareGaussianBlur();
     void prepareFPTexture(Texture& texture); // FP = floating point
 
