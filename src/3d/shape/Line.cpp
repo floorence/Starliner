@@ -25,6 +25,6 @@ std::vector<GLuint> Line::generateIndices() {
 }
 
 void Line::draw(Camera& camera) {
-    preDraw();
+    preDraw(camera);
     mesh.drawLine(camera, *shader);
 }

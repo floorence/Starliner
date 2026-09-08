@@ -48,8 +48,8 @@ void Object3D::setScale(glm::vec3 scale) {
     invalidateModel();
 }
 
-void Object3D::preDraw() {
-    Drawable3D::preDraw();
+void Object3D::preDraw(Camera& camera) {
+    Drawable3D::preDraw(camera);
     shader->setModel(model);
     shader->setRotation(rotation); // shader still has to rotate normals
 }

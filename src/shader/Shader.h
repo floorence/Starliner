@@ -35,7 +35,8 @@ public:
 	void setFarPlane(float farPlane); // default.frag
 	void setTexture(Texture& texture, GLuint unit); // default.frag, gui.frag, blur.frag, exposure.frag, hdr_bloom.frag
 	void setShininess(float shininess); // default.frag
-	void setProjection(glm::mat4 projection); // gui.vert
+	void setView(glm::mat4 view); // skybox.vert
+	void setProjection(glm::mat4 projection); // gui.vert, skybox.vert
 	void setExposure(float exposure); // hdr_bloom.frag
 	void setTextColor(glm::vec3 textColor); // font.frag
 	void setBlurHorizontal(bool horizontal); // blur.frag

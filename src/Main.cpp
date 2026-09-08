@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <fmt/format.h>
 
+#include "3d/shape/Skybox.h"
 #include "TestRoom.h"
 #include "gui/Hud.h"
 #include "window/Window.h"
@@ -139,6 +140,7 @@ int main() {
 	ClickController cc;
 
 	World world(67, &lc);
+	Skybox skybox;
 
 	// set pointers used in glfw callbacks
 	windowPtr = &w;
@@ -149,6 +151,7 @@ int main() {
 	// register listeners, shapes, and drawables
 	w.registerListeners({&hud, &player, &settingsMenu});
 
+	lc.registerDrawable(&skybox);
 	lc.registerDrawables(testRoom.objects);
 	lc.registerDrawable(&player);
 	lc.registerDrawable(&world);

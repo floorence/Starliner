@@ -91,6 +91,11 @@ void Shader::setShininess(float shininess) {
 	glUniform1f(glGetUniformLocation(ID, "material.shininess"), shininess);
 }
 
+void Shader::setView(glm::mat4 view) {
+	activate();
+	glUniformMatrix4fv(glGetUniformLocation(ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+}
+
 void Shader::setProjection(glm::mat4 projection) {
 	activate();
 	glUniformMatrix4fv(glGetUniformLocation(ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));

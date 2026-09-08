@@ -29,11 +29,11 @@ public:
     void setTextures(AssetTexture* diffuse, AssetTexture* specular);
     
     virtual void draw(Camera& camera) override;
-    void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
+    virtual void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 protected:
     Mesh mesh;
  
-    virtual void preDraw() override;
+    virtual void preDraw(Camera& camera) override;
     /**
      * call this after updating subclass fields used by generateVertices/Indices
      */
