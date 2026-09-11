@@ -24,6 +24,7 @@ CubeMapTexture::CubeMapTexture(std::string uniform, std::vector<std::string> fac
     : Texture(uniform)
 {
     bind();
+    stbi_set_flip_vertically_on_load(false);
     int widthImg, heightImg, numColCh;
     for (uint i = 0; i < faces.size(); i++) {
         unsigned char *bytes = stbi_load(faces[i].c_str(), &widthImg, &heightImg, &numColCh, 0);

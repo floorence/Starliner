@@ -93,6 +93,7 @@ void LightController::renderForHDRAndBloom(Camera& camera) {
 
     glClearBufferfv(GL_COLOR, 0, background); // hdr attachment
     glClearBufferfv(GL_COLOR, 1, black); // bloom attachment
+    glClearBufferfv(GL_COLOR, 2, black); // luminance attachment
     glClear(GL_DEPTH_BUFFER_BIT);
 
     for (const auto& drawable: drawables) {

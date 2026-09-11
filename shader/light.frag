@@ -2,6 +2,7 @@
 
 layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec4 BrightColor;
+layout (location = 2) out vec4 LogLuminance;
 
 uniform vec3 materialColor;
 
@@ -16,4 +17,6 @@ void main() {
 	} else {
 		BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 	}
+
+    LogLuminance = vec4(log(0.001 + brightness), 0.0, 0.0, 1.0);
 }

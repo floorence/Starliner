@@ -18,6 +18,7 @@
 #include "util/Log.h"
 #include "mass/Player.h"
 #include "world/World.h"
+#include "world/PlanetTextures.h"
 
 // initial window dimensions, which might not match what will be loaded from save
 const unsigned int width = 800;
@@ -119,6 +120,8 @@ int main() {
 	Globals::FlatShader = &flatShader;
 	Globals::GuiShader = &guiShader;
 	Globals::FontShader = &fontShader;
+
+	PlanetTextures::init();
 
 	TestRoom testRoom;
 	Log::log(TAG, "Test room initialized");
