@@ -156,10 +156,21 @@ float getBrightness(vec3 color) {
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
 
+float overlay(float base, float blend) {
+    return base < 0.5 ? (2.0 * base * blend) : (1.0 - 2.0 * (1.0 - base) * (1.0 - blend));
+}
+
 void main() {
 	vec3 normal = normalize(normal);
 	vec3 viewDirection = normalize(camPos - crntPos);
     vec3 texColor = getColorFromSource();
+    if (tintColor != vec4(0)) {
+        texColor = vec3(
+            max(0, overlay(tintColor.r, texColor.r)),
+            max(0, overlay(tintColor.g, texColor.g)),
+            max(0, overlay(tintColor.b, texColor.b))
+        );
+    }
     vec3 specColor = (colorSource == COLOR_SOURCE_TEXTURE) ? vec3(texture(material.specular, texCoord)) : vec3(getBrightness(texColor));
 
 	vec3 result = vec3(0);
@@ -169,7 +180,8 @@ void main() {
 
     vec3 ambient = 0.2 * texColor;
     result += ambient;
-	result = mix(result, tintColor.rgb, tintColor.a);
+
+	// result = mix(result, tintColor.rgb, tintColor.a);
     
     FragColor = vec4(result, 1.0);
 

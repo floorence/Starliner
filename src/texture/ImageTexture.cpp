@@ -23,7 +23,7 @@ ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelT
 
 	int realNumColCh = 4;
 	if (texType == TextureType::Specular) {
-		Log::log(TAG, "specular texture");
+		// Log::log(TAG, "specular texture");
 		unsigned char* redChannel = new unsigned char[widthImg * heightImg];
 		for (int i = 0; i < widthImg * heightImg; i++) {
 			unsigned char r = bytes[i * realNumColCh + 0];

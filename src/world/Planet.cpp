@@ -3,7 +3,7 @@
 #include "world/World.h"
 
 Planet::Planet(LocalGen& gen, glm::vec3 position)
-    : Sphere(position, gen.randomFloat(World::REGION_SIZE / 64.0f, World::REGION_SIZE / 32.0f))
+    : Sphere(position, gen.randomFloat(World::REGION_SIZE / 64.0f, World::REGION_SIZE / 32.0f), 32, 64)
 {
     this->Mass::position = position;
     generateTexture();
@@ -20,6 +20,6 @@ void Planet::generateColorTint(LocalGen& gen) {
         gen.randomFloat(0.0f, 10.0f),
         gen.randomFloat(0.0f, 10.0f),
         gen.randomFloat(0.0f, 10.0f),
-        0.5f
+        0.3f
     );
 }

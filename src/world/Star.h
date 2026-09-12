@@ -16,7 +16,7 @@ private:
     glm::vec3 north;
     Line northLine;
 
-    glm::vec3 generatePosition(LocalGen& gen, Region region);
+    static glm::vec3 generatePosition(LocalGen& gen, Region region);
     void generateNorth(LocalGen& gen);
     void generateColor(LocalGen& gen);
 };

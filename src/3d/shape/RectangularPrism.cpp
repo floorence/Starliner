@@ -1,4 +1,5 @@
 #include "RectangularPrism.h"
+#include "util/Log.h"
 #include <glm/geometric.hpp>
 #include <glm/gtc/constants.hpp>
 
@@ -45,6 +46,11 @@ std::vector<Vertex> RectangularPrism::generateVertices() {
         glm::vec2 xFacingTexCoord = deriveTexCoord(pos, (x < 0) ? Facing::negX : Facing::posX);
         glm::vec2 yFacingTexCoord = deriveTexCoord(pos, (y < 0) ? Facing::negY : Facing::posY);
         glm::vec2 zFacingTexCoord = deriveTexCoord(pos, (z < 0) ? Facing::negZ : Facing::posZ);
+
+        if (width == 1.0f && height == 1.0f && length == 1.0f) {
+            Log::log("RectangularPrism", fmt::format("vertex pos: {}, {}, {}, texCoords: xFacing: {}, {}, yFacing: {}, {}, zFacing {}, {}",
+                x, y, z, xFacingTexCoord.x, xFacingTexCoord.y, yFacingTexCoord.x, yFacingTexCoord.y, zFacingTexCoord.x, zFacingTexCoord.y));
+        }
 
         Vertex xFacing = Vertex{
             pos,
@@ -126,6 +132,7 @@ glm::vec2 RectangularPrism::deriveTexCoord(glm::vec3 vertex, Facing dir) {
     glm::vec3 rotatedVertex = glm::vec3(rotation * glm::vec4(vertex, 1.0f));
 
     // one repetition of texture is 0 to 1
+    // remember: 0,0 is bottom left of texture; 1,1 is top right
     rotatedVertex.x = (rotatedVertex.x < 0) ? 0 : surfaceWidth / texWidth;
     rotatedVertex.y = (rotatedVertex.y < 0) ? 0 : surfaceHeight / texHeight;
 

@@ -112,8 +112,6 @@ int main() {
 
 	FontTexture fontTex("assets/pixel_operator_short_dollar.ttf");
 
-	Log::log(TAG, "textures initialized");
-
 	Globals::Font = &fontTex;
 	Globals::DefaultShader = &shader;
 	Globals::LightShader = &lightShader;
@@ -122,6 +120,7 @@ int main() {
 	Globals::FontShader = &fontShader;
 
 	PlanetTextures::init();
+	Log::log(TAG, "textures initialized");
 
 	TestRoom testRoom;
 	Log::log(TAG, "Test room initialized");

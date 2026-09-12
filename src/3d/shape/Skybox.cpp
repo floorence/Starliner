@@ -4,12 +4,12 @@
 Skybox::Skybox(): 
     RectangularPrism(glm::vec3(0.0f), 1.0f, 1.0f, 1.0f),
     texture("skybox", {
-        "assets/skybox/right.png", 
         "assets/skybox/left.png", 
+        "assets/skybox/right.png", 
         "assets/skybox/up.png", 
         "assets/skybox/down.png", 
-        "assets/skybox/back.png",
-        "assets/skybox/front.png" 
+        "assets/skybox/front.png",
+        "assets/skybox/back.png"
     }),
     skyboxShader("shader/skybox.vert", "shader/skybox.frag")
 {
