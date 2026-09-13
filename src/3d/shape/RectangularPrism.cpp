@@ -47,11 +47,6 @@ std::vector<Vertex> RectangularPrism::generateVertices() {
         glm::vec2 yFacingTexCoord = deriveTexCoord(pos, (y < 0) ? Facing::negY : Facing::posY);
         glm::vec2 zFacingTexCoord = deriveTexCoord(pos, (z < 0) ? Facing::negZ : Facing::posZ);
 
-        if (width == 1.0f && height == 1.0f && length == 1.0f) {
-            Log::log("RectangularPrism", fmt::format("vertex pos: {}, {}, {}, texCoords: xFacing: {}, {}, yFacing: {}, {}, zFacing {}, {}",
-                x, y, z, xFacingTexCoord.x, xFacingTexCoord.y, yFacingTexCoord.x, yFacingTexCoord.y, zFacingTexCoord.x, zFacingTexCoord.y));
-        }
-
         Vertex xFacing = Vertex{
             pos,
             xNormal,

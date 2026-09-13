@@ -12,7 +12,12 @@ StarSystem::StarSystem(LocalGen&& gen, Region region): star(gen, region) {
 }
 
 void StarSystem::update(float deltaTime) {
-    // TODO update each planet
+    for (auto& planet: planets) {
+        glm::vec3 starToPlanet = planet.getPosition() - star.getPosition();
+        float angle = planet.orbitalSpeed * deltaTime;
+        starToPlanet = glm::rotate(starToPlanet, angle, star.getNorth());
+        planet.setPosition(star.getPosition() + starToPlanet);
+    }
 }
 
 void StarSystem::draw(Camera& camera) {
@@ -49,8 +54,8 @@ void StarSystem::generatePlanets(LocalGen& gen) {
         glm::vec3 starToPlanet = glm::rotate(basePlanetVec, glm::radians(static_cast<float>(rotation)), star.getNorth());
         starToPlanet = Utils::setVectorLength(starToPlanet, currDist);
 
-        Planet planet(gen, star.Mass::position + starToPlanet);
-        // TODO
+        Planet planet(gen, star.getPosition() + starToPlanet);
+        planet.calculateOrbitalSpeed(currDist, star.mass);
         planets.push_back(std::move(planet));
     }
 }

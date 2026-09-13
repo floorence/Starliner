@@ -1,5 +1,7 @@
 #include "Star.h"
+#include "util/Log.h"
 #include "util/Utils.h"
+#include "world/StarColors.h"
 #include "world/World.h"
 
 Star::Star(LocalGen& gen, Region region):
@@ -9,11 +11,10 @@ Star::Star(LocalGen& gen, Region region):
         32, 64, true
     ) 
 {
-    this->Mass::position = this->Object3D::position;
     northLine.setColor(glm::vec3(100.0f, 0.0f, 69.0f));
 
     generateNorth(gen);
-    generateColor(gen);
+    deriveMassAndColor();
 }
 
 glm::vec3 Star::getNorth() {
@@ -44,12 +45,16 @@ void Star::generateNorth(LocalGen& gen) {
     );
 }
 
-void Star::generateColor(LocalGen& gen) {
+void Star::deriveMassAndColor() {
+    mass = 1 + ((radius - World::REGION_SIZE / 16.0f) / (World::REGION_SIZE / 16.0f)) * 99; // map to [1, 100] solar masses
+    float temp = 2 + ((mass - 1.0f) / 99.0f) * 16; // map to [2, 18] kilo kelvin
+
     setColor(glm::vec3(
-        gen.randomFloat(75.0f, 100.0f),
-        gen.randomFloat(75.0f, 100.0f),
-        gen.randomFloat(75.0f, 100.0f)
+        StarColors::r(temp),
+        StarColors::g(temp),
+        StarColors::b(temp)
     ));
+    Log::log("Star", fmt::format("mass: {}, color: {}, {}, {}", mass, getColor().r, getColor().g, getColor().b));
 }
 
 void Star::draw(Camera& camera) {
