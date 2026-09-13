@@ -54,7 +54,7 @@ void Star::deriveMassAndColor() {
         StarColors::g(temp),
         StarColors::b(temp)
     ));
-    Log::log("Star", fmt::format("mass: {}, color: {}, {}, {}", mass, getColor().r, getColor().g, getColor().b));
+    Log::log("Star", fmt::format("radius: {}, mass: {}, color: {}, {}, {}", radius, mass, getColor().r, getColor().g, getColor().b));
 }
 
 void Star::draw(Camera& camera) {

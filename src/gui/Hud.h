@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gui/element/IconButton.h"
 #include "window/WindowListener.h"
 #include "gui/SettingsMenu.h"
 
@@ -13,6 +14,7 @@ public:
     void setPerformanceText(std::string text);
     void draw();
 private:
-	Button settingsButton;
+	IconButton settingsButton;
+    IconButton debugButton;
 	Text performanceText;
 };

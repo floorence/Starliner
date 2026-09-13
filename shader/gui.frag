@@ -18,7 +18,12 @@ uniform vec4 tintColor;
 void main() {
 	vec3 result;
 	if (colorSource == COLOR_SOURCE_TEXTURE) {
-		result = vec3(texture(diffuse0, texCoord));
+		vec4 texColor = texture(diffuse0, texCoord); 
+		if (texColor.a == 0.0) {
+			discard;
+		} else {
+			result = vec3(texColor);
+		}
 	} else {
 		result = materialColor;
 	} // TODO vertex color
