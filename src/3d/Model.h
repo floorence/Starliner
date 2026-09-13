@@ -37,5 +37,5 @@ private:
     std::vector<Texture*> loadMaterialTextures(aiMaterial *mat, aiTextureType type);
     TextureType aiToTextureType(aiTextureType type);
 
-    void preDraw() override;
+    void preDraw(Camera& camera) override;
 };

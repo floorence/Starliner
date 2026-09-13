@@ -91,11 +91,9 @@ void Shader::setShininess(float shininess) {
 	glUniform1f(glGetUniformLocation(ID, "material.shininess"), shininess);
 }
 
-void Shader::setCubeMapTexture(CubeMapTexture& texture, std::string uniform, GLuint unit) {
+void Shader::setView(glm::mat4 view) {
 	activate();
-
-	glUniform1i(glGetUniformLocation(ID, uniform.c_str()), unit);
-	texture.bind(unit);
+	glUniformMatrix4fv(glGetUniformLocation(ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 }
 
 void Shader::setProjection(glm::mat4 projection) {
@@ -162,9 +160,9 @@ void Shader::setNumPointLights(int num) {
 	glUniform1i(glGetUniformLocation(ID, "numPointLights"), num);
 }
 
-void Shader::setColor(glm::vec3 color) {
+void Shader::setColor(glm::vec4 color) {
 	activate();
-	glUniform3f(glGetUniformLocation(ID, "materialColor"), color.x, color.y, color.z);
+	glUniform4f(glGetUniformLocation(ID, "materialColor"), color.x, color.y, color.z, color.a);
 }
 
 void Shader::setColorTint(glm::vec4 color) {

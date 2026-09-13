@@ -14,6 +14,7 @@ class LightController: public SettingsListener {
 public:
     LightController(int fbWidth, int fbHeight);
 
+    // drawables will be drawn in the order they are registered.
     // for drawable light sources, must call setLights, which will store the light data to upload to shaders,
     // and registerDrawable which will store the light to actually be drawn.
 

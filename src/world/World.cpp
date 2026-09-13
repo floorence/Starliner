@@ -3,9 +3,8 @@
 #include "util/Log.h"
 #include <algorithm>
 #include <memory>
-#include "GenRandom.h"
 
-World::World(uint seed, LightController* lc): seed(seed), lc(lc) {
+World::World(uint seed, LightController* lc): gen(seed), lc(lc) {
     playerRegion = {0, 0, 0};
     loadPlayerRegions();
 }
@@ -134,7 +133,7 @@ void World::loadIfNotLoaded(Region region) {
     Log::log("World", fmt::format("loading..."));
     
     if (actuallyHasStarSystem(region)) {
-        auto starSystem = std::make_unique<StarSystem>(GenRandom::getRegionSeed(seed, region), region);
+        auto starSystem = std::make_unique<StarSystem>(gen.getRegionSeed(region), region);
         region.starSystem = starSystem.get();
         Log::log("World", fmt::format("star system at region {}, {}, {}, star pos: {}, {}, {}", region.x, region.y, region.z,
             starSystem->starLightData.position.x, starSystem->starLightData.position.y, starSystem->starLightData.position.z));
@@ -146,11 +145,11 @@ void World::loadIfNotLoaded(Region region) {
 }
 
 bool World::potentiallyHasStarSystem(Region region) {
-    return GenRandom::hash01(seed, region, 0) < 0.5;
+    return gen.hash01(region, 0) < 0.5;
 }
 
 double World::getPriority(Region region) {
-    return GenRandom::hash01(seed, region, 1);
+    return gen.hash01(region, 1);
 }
 
 bool World::actuallyHasStarSystem(Region region) {

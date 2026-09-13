@@ -52,7 +52,7 @@ protected:
 
     glm::mat4 defaultRotation = glm::mat4(1.0f);
 
-    virtual void preDraw() override;
+    virtual void preDraw(Camera& camera) override;
     virtual void preDrawToDepthMap(Shader& depthShader) override;
     /**
      * resets model with current position, rotation, and scale.

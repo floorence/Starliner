@@ -33,10 +33,10 @@ public:
 	void setCamera(Camera& camera); // default.vert
 	void setPointLightCamera(PointLightCamera& camera); // depth.geom, depth.frag
 	void setFarPlane(float farPlane); // default.frag
-	void setTexture(Texture& texture, GLuint unit); // default.frag, gui.frag, hdr_bloom.frag
+	void setTexture(Texture& texture, GLuint unit); // default.frag, gui.frag, blur.frag, exposure.frag, hdr_bloom.frag
 	void setShininess(float shininess); // default.frag
-	void setCubeMapTexture(CubeMapTexture& texture, std::string uniform, GLuint unit); // default.frag
-	void setProjection(glm::mat4 projection); // gui.vert
+	void setView(glm::mat4 view); // skybox.vert
+	void setProjection(glm::mat4 projection); // gui.vert, skybox.vert
 	void setExposure(float exposure); // hdr_bloom.frag
 	void setTextColor(glm::vec3 textColor); // font.frag
 	void setBlurHorizontal(bool horizontal); // blur.frag
@@ -49,7 +49,7 @@ public:
     void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic); // default.frag
     void setNumPointLights(int num); // default.frag
 
-	void setColor(glm::vec3 color); // default.frag, light.frag, gui.frag
+	void setColor(glm::vec4 color); // default.frag, light.frag, gui.frag
 	void setColorTint(glm::vec4 color); // default.frag, gui.frag
 private:
 	const std::string TAG = "Shader";

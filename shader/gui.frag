@@ -11,17 +11,22 @@ const int COLOR_SOURCE_MATERIAL_COLOR = 2;
 
 uniform int colorSource;
 uniform sampler2D diffuse0;
-uniform vec3 materialColor;
+uniform vec4 materialColor;
 
 uniform vec4 tintColor;
 
 void main() {
-	vec3 result;
+	vec4 result;
 	if (colorSource == COLOR_SOURCE_TEXTURE) {
-		result = vec3(texture(diffuse0, texCoord));
+		result = texture(diffuse0, texCoord); 
 	} else {
 		result = materialColor;
 	} // TODO vertex color
-	result = mix(result, tintColor.rgb, tintColor.a);
-	FragColor = vec4(result, 1.0);
+
+	if (result.a == 0.0) {
+		discard;
+	} else {
+		vec3 mixed = mix(result.rgb, tintColor.rgb, tintColor.a);
+		FragColor = vec4(mixed, 1.0);
+	}
 }

@@ -1,12 +1,14 @@
 #pragma once
 
+#include "texture/Texture.h"
 #include <glad/glad.h>
-#include <sys/types.h>
+#include <string>
+#include <vector>
 
-class CubeMapTexture {
+class CubeMapTexture: public Texture {
 public:
-    GLuint ID = 0;
+    CubeMapTexture(std::string uniform, uint width, uint height);
+    CubeMapTexture(std::string uniform, std::vector<std::string> faces);
 
-    CubeMapTexture(uint width, uint height);
-    void bind(GLuint unit);
+    void bind() override;
 };

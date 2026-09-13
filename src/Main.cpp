@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <fmt/format.h>
 
+#include "3d/shape/Skybox.h"
 #include "TestRoom.h"
 #include "gui/Hud.h"
 #include "window/Window.h"
@@ -17,6 +18,7 @@
 #include "util/Log.h"
 #include "mass/Player.h"
 #include "world/World.h"
+#include "world/PlanetTextures.h"
 
 // initial window dimensions, which might not match what will be loaded from save
 const unsigned int width = 800;
@@ -110,14 +112,15 @@ int main() {
 
 	FontTexture fontTex("assets/pixel_operator_short_dollar.ttf");
 
-	Log::log(TAG, "textures initialized");
-
 	Globals::Font = &fontTex;
 	Globals::DefaultShader = &shader;
 	Globals::LightShader = &lightShader;
 	Globals::FlatShader = &flatShader;
 	Globals::GuiShader = &guiShader;
 	Globals::FontShader = &fontShader;
+
+	PlanetTextures::init();
+	Log::log(TAG, "textures initialized");
 
 	TestRoom testRoom;
 	Log::log(TAG, "Test room initialized");
@@ -139,6 +142,7 @@ int main() {
 	ClickController cc;
 
 	World world(67, &lc);
+	Skybox skybox;
 
 	// set pointers used in glfw callbacks
 	windowPtr = &w;
@@ -149,6 +153,7 @@ int main() {
 	// register listeners, shapes, and drawables
 	w.registerListeners({&hud, &player, &settingsMenu});
 
+	lc.registerDrawable(&skybox);
 	lc.registerDrawables(testRoom.objects);
 	lc.registerDrawable(&player);
 	lc.registerDrawable(&world);

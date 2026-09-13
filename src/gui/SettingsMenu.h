@@ -3,7 +3,7 @@
 #include "window/WindowListener.h"
 #include "settings/SettingsController.h"
 #include "settings/SettingsListener.h"
-#include "gui/element/Button.h"
+#include "gui/element/TextButton.h"
 #include "gui/element/IntGuiElement.h"
 #include "gui/framework/Quad.h"
 #include <memory>
@@ -29,22 +29,15 @@ private:
     Quad headerBackground;
     Quad footerBackground;
 
-    Button closeButton;
-    Button applyButton;
-    Button cancelButton;
+    TextButton closeButton;
+    TextButton applyButton;
+    TextButton cancelButton;
 
     glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    std::vector<Button> categoryButtons;
+    std::vector<TextButton> categoryButtons;
     std::vector<std::vector<SettingGui>> settingGuiData;
 
-    const glm::vec3 GREY_1 = glm::vec3(0.1f, 0.1f, 0.1f);
-    const glm::vec3 GREY_2 = glm::vec3(0.2f, 0.2f, 0.2f);
-    const glm::vec3 GREY_3 = glm::vec3(0.3f, 0.3f, 0.3f);
-    const glm::vec3 GREY_4 = glm::vec3(0.4f, 0.4f, 0.4f);
-    const glm::vec3 GREY_5 = glm::vec3(0.5f, 0.5f, 0.5f);
-    const glm::vec3 GREY_6 = glm::vec3(0.6f, 0.6f, 0.6f);
-    const glm::vec3 GREY_7 = glm::vec3(0.7f, 0.7f, 0.7f);
     const std::string TAG = "SettingsMenu";
 
     SettingsController* sc;

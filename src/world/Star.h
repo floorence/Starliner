@@ -2,17 +2,22 @@
 
 #include "3d/shape/Line.h"
 #include "3d/shape/Sphere.h"
-#include "mass/Mass.h"
+#include "world/Region.h"
+#include "world/random/LocalGen.h"
 
-class Star: public Mass, public Sphere {
+class Star: public Sphere {
 public:
-    Star(glm::vec3 position, int radius);
+    float mass;
+
+    Star(LocalGen& gen, Region region);
 
     glm::vec3 getNorth();
-    void setNorth(glm::vec3 north);
     void draw(Camera& camera) override;
 private:
     glm::vec3 north;
-
     Line northLine;
+
+    static glm::vec3 generatePosition(LocalGen& gen, Region region);
+    void generateNorth(LocalGen& gen);
+    void deriveMassAndColor();
 };

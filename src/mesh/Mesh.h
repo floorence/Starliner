@@ -8,7 +8,9 @@
 
 struct Material {
 	ColorSource colorSource = ColorSource::Texture;
-	glm::vec3 color = glm::vec3(1.0f);
+	// for now, alpha component only applies to gui, and only full transparency/opacity is supported: 
+	// an alpha value of anything greater than 0 will be interpreted as fully opaque by the shader
+	glm::vec4 color = glm::vec4(1.0f);
 	std::vector<Texture*> textures;
 };
 
@@ -18,8 +20,9 @@ public:
 	Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const std::vector<Texture*>& textures);
 	Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const glm::vec3 color);
 
-	glm::vec3 getColor();
+	glm::vec4 getColor();
 	void setColor(const glm::vec3 color);
+	void setColor(const glm::vec4 color);
 	void setTextures(const std::vector<Texture*>& textures);
 	void setShapeData(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices);
 
