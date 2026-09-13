@@ -4,10 +4,10 @@ layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec4 BrightColor;
 layout (location = 2) out vec4 LogLuminance;
 
-uniform vec3 materialColor;
+uniform vec4 materialColor;
 
 void main() {
-	FragColor = vec4(materialColor, 1.0);
+	FragColor = vec4(materialColor.rgb, 1.0);
 	float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
     if (brightness > 50.0) {
 		// bright bloom blur texture is NOT tone mapped in hdr_bloom.frag, must map to 0-1 here, otherwise blurred areas will be too bright and not look blurred

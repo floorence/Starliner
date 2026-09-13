@@ -18,6 +18,10 @@ void Button::setBackgroundColor(glm::vec3 color) {
     background.setColor(color);
 }
 
+void Button::setBackgroundColor(glm::vec4 color) {
+    background.setColor(color);
+}
+
 void Button::draw() {
     background.draw();
 }

@@ -13,6 +13,7 @@ public:
     Button& operator=(Button&&) noexcept = default;
 
     void setBackgroundColor(glm::vec3 color);
+    void setBackgroundColor(glm::vec4 color);
     void onHover() override;
     void onHoverOff() override;
 

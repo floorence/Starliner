@@ -21,6 +21,7 @@ public:
     // to the shader (undefined behaviour).
 
     void setColor(glm::vec3 color);
+    void setColor(glm::vec4 color);
     void setTexture(Texture* texture);
     void setTextures(std::vector<Texture*> textures);
 private:

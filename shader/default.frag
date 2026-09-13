@@ -57,7 +57,7 @@ in vec3 color;
 // These are not part of the material struct since other shaders also have these uniforms and it would be annoying
 // to have these have a different uniform name
 uniform int colorSource;
-uniform vec3 materialColor;
+uniform vec4 materialColor;
 
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLight;
@@ -146,7 +146,7 @@ vec3 getColorFromSource() {
     if (colorSource == COLOR_SOURCE_TEXTURE) {
         return vec3(texture(material.diffuse, texCoord));
     } else if (colorSource == COLOR_SOURCE_MATERIAL_COLOR) {
-        return materialColor;
+        return vec3(materialColor);
     } else {
         return color;
     }

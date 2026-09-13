@@ -7,6 +7,8 @@ class IconButton: public Button {
 public:
     IconButton(std::string iconPath);
 
+    void onHover() override;
+    void onHoverOff() override;
     void draw() override;
 private:
     Quad icon;

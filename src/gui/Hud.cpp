@@ -9,13 +9,13 @@ Hud::Hud(int windowWidth, int windowHeight, SettingsMenu* settingsMenu)
 {
 	onWindowSizeChanged(windowWidth, windowHeight);
 	
-	settingsButton.setBackgroundColor(Constants::GREY_4);
+	settingsButton.setBackgroundColor(Constants::TRANSPARENT);
 	settingsButton.setOnClick([settingsMenu]() {
 		Log::log("Hud", "settings button clicked");
 		settingsMenu->isOpen = !settingsMenu->isOpen;
 	});
 
-	debugButton.setBackgroundColor(Constants::GREY_4);
+	debugButton.setBackgroundColor(Constants::TRANSPARENT);
 	debugButton.setOnClick([]() {
 		Log::log("Hud", "debug button clicked");
 	});

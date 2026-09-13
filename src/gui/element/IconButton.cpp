@@ -15,6 +15,16 @@ void IconButton::onBoundsChanged() {
     icon.setBounds(x + ICON_TO_EDGE_MARGIN, y + ICON_TO_EDGE_MARGIN, iconSize, iconSize);
 }
 
+void IconButton::onHover() {
+    Button::onHover();
+    icon.tintColor = glm::vec4(1.0f, 1.0f, 1.0f, 0.1f);
+}
+
+void IconButton::onHoverOff() {
+    Button::onHoverOff();
+    icon.tintColor = glm::vec4(0.0f);
+}
+
 void IconButton::draw() {
     Button::draw();
     icon.draw();
