@@ -120,6 +120,8 @@ int main() {
 	Globals::GuiShader = &guiShader;
 	Globals::FontShader = &fontShader;
 
+	Globals::drawDebugVectors = false; // true;
+
 	PlanetTextures::init(true);
 	Log::log(TAG, "textures initialized");
 

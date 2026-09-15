@@ -11,12 +11,12 @@ void DebugMenu::initialize() {
     background.setColor(Constants::GREY_3);
 
     closeButton.setText("x");
-    closeButton.setBackgroundColor(Constants::GREY_7);
+    closeButton.setBackgroundColor(Constants::GREY_5);
     closeButton.setOnClick([this]() {
         isOpen = false;
     });
 
-    // allocate MAX_ENTRIES star system entries; if there are more than MAX_ENTRIES close star systems, too bad!
+    // allocate MAX_ENTRIES star system entries; if there happens to be more than MAX_ENTRIES close star systems, too bad!
     for (uint i = 0; i < MAX_ENTRIES; i++) {
         StarSystemEntry entry = {
             false,
@@ -43,9 +43,12 @@ void DebugMenu::setStarSystems(std::vector<StarSystem*> starSystems) {
             };
             std::string regionStr = fmt::format("Region: {}, {}, {}", region.x, region.y, region.z);
             entries[i].regionText.setText(regionStr);
+            entries[i].regionText.invalidateBounds();
             
-            std::string positionStr = fmt::format("Pos: {}, {}, {}", starPos.x, starPos.y, starPos.z);
+            std::string positionStr = fmt::format("Position: {}, {}, {}", starPos.x, starPos.y, starPos.z);
             entries[i].positionText.setText(positionStr);
+            entries[i].positionText.invalidateBounds();
+
             entries[i].teleportButton.setOnClick([this, starPos]() {
                 this->player->teleport(starPos);
             });

@@ -179,7 +179,7 @@ void Player::onWindowSizeChanged(int newWidth, int newHeight) {
 void Player::draw(Camera& camera) {
 	if (thirdPerson) {
 		body.draw(camera);
-		orientationLine.draw(camera);
+		if (Globals::drawDebugVectors) orientationLine.draw(camera);
 		leftTrail.draw(camera);
 		rightTrail.draw(camera);
 	}

@@ -59,5 +59,5 @@ void Star::deriveMassAndColor() {
 
 void Star::draw(Camera& camera) {
     Shape3D::draw(camera);
-    northLine.draw(camera);
+    if (Globals::drawDebugVectors) northLine.draw(camera);
 }
