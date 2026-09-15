@@ -8,6 +8,7 @@
 
 #include "3d/shape/Skybox.h"
 #include "TestRoom.h"
+#include "gui/DebugMenu.h"
 #include "gui/Hud.h"
 #include "window/Window.h"
 #include "gui/framework/ClickController.h"
@@ -119,7 +120,7 @@ int main() {
 	Globals::GuiShader = &guiShader;
 	Globals::FontShader = &fontShader;
 
-	PlanetTextures::init();
+	PlanetTextures::init(true);
 	Log::log(TAG, "textures initialized");
 
 	TestRoom testRoom;
@@ -136,13 +137,28 @@ int main() {
 	SettingsMenu settingsMenu(&sc);
 	settingsMenu.setCorners(100, 100, width - 100, height - 100);
 
-	Hud hud(width, height, &settingsMenu);
+	DebugMenu debugMenu(&player);
+	debugMenu.setCorners(100, 100, width - 100, height - 100);
+
+	Hud hud(width, height);
 
 	LightController lc(fbWidth, fbHeight);
 	ClickController cc;
 
 	World world(67, &lc);
 	Skybox skybox;
+
+	// set button callbacks here since hud doesn't have access to the world and the menus, and it would be annoying to pass a bunch of stuff to it
+	hud.settingsButton.setOnClick([&settingsMenu]() {
+		Log::log("Hud", "settings button clicked");
+		settingsMenu.isOpen = !settingsMenu.isOpen;
+	});
+
+	hud.debugButton.setOnClick([&debugMenu, &world]() {
+		Log::log("Hud", "debug button clicked");
+		debugMenu.setStarSystems(world.getCloseStarSystems());
+		debugMenu.isOpen = !debugMenu.isOpen;
+	});
 
 	// set pointers used in glfw callbacks
 	windowPtr = &w;
@@ -151,7 +167,7 @@ int main() {
 	clickControllerPtr = &cc;
 
 	// register listeners, shapes, and drawables
-	w.registerListeners({&hud, &player, &settingsMenu});
+	w.registerListeners({&hud, &player, &settingsMenu, &debugMenu});
 
 	lc.registerDrawable(&skybox);
 	lc.registerDrawables(testRoom.objects);
@@ -159,7 +175,7 @@ int main() {
 	lc.registerDrawable(&world);
 
 	sc.registerListeners({&settingsMenu, &lc, &player, &w});
-	cc.registerListeners({&hud, &settingsMenu});
+	cc.registerListeners({&hud, &settingsMenu, &debugMenu});
 
 	sc.load();
 	Log::log(TAG, "settings loaded from save");
@@ -185,6 +201,7 @@ int main() {
 		hud.draw();
 
 		if (settingsMenu.isOpen) settingsMenu.draw();
+		if (debugMenu.isOpen) debugMenu.draw();
 
 		glfwPollEvents();
 		// end frame here since glfwSwapBuffers() suspends when using vsync

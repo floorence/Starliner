@@ -17,7 +17,10 @@ public:
 
     void onPlayerPosition(glm::vec3 pos);
     void update(float deltaTime);
+    
+    // debug
     std::string getDebugString();
+    std::vector<StarSystem*> getCloseStarSystems();
 
     void draw(Camera& camera) override;
     void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;

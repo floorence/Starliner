@@ -3,22 +3,14 @@
 #include "util/Globals.h"
 #include "util/Log.h"
 
-Hud::Hud(int windowWidth, int windowHeight, SettingsMenu* settingsMenu)
+Hud::Hud(int windowWidth, int windowHeight)
 	: settingsButton("assets/icon/settings.png"),
 	  debugButton("assets/icon/gear.png")
 {
 	onWindowSizeChanged(windowWidth, windowHeight);
 	
 	settingsButton.setBackgroundColor(Constants::TRANSPARENT);
-	settingsButton.setOnClick([settingsMenu]() {
-		Log::log("Hud", "settings button clicked");
-		settingsMenu->isOpen = !settingsMenu->isOpen;
-	});
-
 	debugButton.setBackgroundColor(Constants::TRANSPARENT);
-	debugButton.setOnClick([]() {
-		Log::log("Hud", "debug button clicked");
-	});
 
 	performanceText.setFontSize(16);
 	performanceText.setCenterText(false);

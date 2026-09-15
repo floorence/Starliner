@@ -44,6 +44,12 @@ std::string Player::getDebugString() {
 	);
 }
 
+void Player::teleport(glm::vec3 newPos) {
+	glm::vec3 movement = newPos - position; 
+	position = newPos;
+	syncCamerasAndBody(movement, 0, 0, 0);
+}
+
 void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	if (!focused) return;
 
@@ -56,7 +62,6 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 			force += orientation;
 		else
 			force += glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
-
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		yawTurn++;

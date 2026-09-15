@@ -103,6 +103,10 @@ std::string World::getDebugString() {
 	);
 }
 
+std::vector<StarSystem*> World::getCloseStarSystems() {
+    return cachedCloseStarSystems;
+}
+
 void World::draw(Camera& camera) {
     for (auto& starSystem: cachedCloseStarSystems) {
         starSystem->draw(camera);
