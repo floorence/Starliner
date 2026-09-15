@@ -2,6 +2,9 @@
 
 3D space exporation game using OpenGL 
 
+<img width="510" height="339" alt="Screenshot_20260914_223500" src="https://github.com/user-attachments/assets/bdf6ae2a-7840-49f5-94d9-e98ff03434fa" />
+<img width="260" height="338" alt="Screenshot_20260914_225350 copy" src="https://github.com/user-attachments/assets/c646b2f4-b890-44e2-a510-a39fb8de62cb" />
+
 ## Setup
 
 Prerequisites: 
