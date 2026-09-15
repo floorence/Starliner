@@ -12,6 +12,10 @@ void Quad::setColor(glm::vec3 color) {
     mesh.setColor(color);
 }
 
+void Quad::setColor(glm::vec4 color) {
+    mesh.setColor(color);
+}
+
 void Quad::setTexture(Texture* texture) {
     mesh.setTextures({texture});
 }

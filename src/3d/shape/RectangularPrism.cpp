@@ -1,4 +1,5 @@
 #include "RectangularPrism.h"
+#include "util/Log.h"
 #include <glm/geometric.hpp>
 #include <glm/gtc/constants.hpp>
 
@@ -126,6 +127,7 @@ glm::vec2 RectangularPrism::deriveTexCoord(glm::vec3 vertex, Facing dir) {
     glm::vec3 rotatedVertex = glm::vec3(rotation * glm::vec4(vertex, 1.0f));
 
     // one repetition of texture is 0 to 1
+    // remember: 0,0 is bottom left of texture; 1,1 is top right
     rotatedVertex.x = (rotatedVertex.x < 0) ? 0 : surfaceWidth / texWidth;
     rotatedVertex.y = (rotatedVertex.y < 0) ? 0 : surfaceHeight / texHeight;
 

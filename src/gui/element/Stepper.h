@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gui/element/Button.h"
+#include "gui/element/TextButton.h"
 #include "gui/framework/Clickable.h"
 #include "gui/element/IntGuiElement.h"
 
@@ -17,9 +17,9 @@ public:
     void setColors(glm::vec3 buttonsColor, glm::vec3 textColor);
     void draw() override;
 private:
-    Button decButton;
+    TextButton decButton;
     Text countText;
-    Button incButton;
+    TextButton incButton;
     std::string units = "";
 
     int count = 0, stepAmount = 1, min, max;

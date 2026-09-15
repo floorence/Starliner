@@ -17,9 +17,11 @@ public:
 
     void draw(Shader& shader = *Globals::GuiShader);
 
-    // Textures and colors, if none is called the Quad will be white
+    // Textures and colors, if none is called the Quad will draw with whatever was last uploaded
+    // to the shader (undefined behaviour).
 
     void setColor(glm::vec3 color);
+    void setColor(glm::vec4 color);
     void setTexture(Texture* texture);
     void setTextures(std::vector<Texture*> textures);
 private:

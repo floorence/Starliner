@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gui/element/Button.h"
+#include "gui/element/TextButton.h"
 #include "gui/element/IntGuiElement.h"
 
 class CycleButton: public IntGuiElement {
@@ -17,7 +17,7 @@ public:
 private:
     int option = 0;
     std::vector<std::string> options;
-    Button button;
+    TextButton button;
 
     void onBoundsChanged() override;
     float getUnboundWidth(float h) override;

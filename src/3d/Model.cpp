@@ -169,13 +169,13 @@ TextureType Model::aiToTextureType(aiTextureType type) {
     }
 }
 
-void Model::preDraw() {
-    Object3D::preDraw();
+void Model::preDraw(Camera& camera) {
+    Object3D::preDraw(camera);
     shader->setShininess(16); // TODO
 }
 
 void Model::draw(Camera& camera) {
-    preDraw();
+    preDraw(camera);
     for (auto& mesh: meshes) {
         mesh.draw(camera, *shader);
     }

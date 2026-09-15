@@ -2,27 +2,24 @@
 
 #include "gui/element/GuiElement.h"
 #include "gui/framework/Quad.h"
-#include "gui/framework/Text.h"
 
 class Button: public GuiElement {
 public:
     Button() = default;
+    virtual ~Button() = default;
 
-    void setText(std::string text);
+    // need to explicitly declare because of the explicitly declared destructor, which causes the compiler to not generate these
+    Button(Button&&) noexcept = default;
+    Button& operator=(Button&&) noexcept = default;
+
     void setBackgroundColor(glm::vec3 color);
-    void draw() override;
-
+    void setBackgroundColor(glm::vec4 color);
     void onHover() override;
     void onHoverOff() override;
-    // public since other gui elements who use Button might need to call these
-    float getUnboundWidth(float h) override;
-    float getUnboundHeight(float w) override;
-private:
-    Quad background;
-    Text text;
 
-    const float TEXT_TO_EDGE_MARGIN = 10.0f;
+    void draw() override;
+protected:
+    Quad background;
 
     void onBoundsChanged() override;
-    int deriveFontSize(float h);
 };

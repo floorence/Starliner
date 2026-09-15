@@ -18,10 +18,10 @@ void SettingsMenu::initialize(const Settings& settings) {
     initPersistentUI();
 
     for (uint i = 0; i < settings.children.size(); i++) {
-        Button categoryButton;
+        TextButton categoryButton;
         std::string categoryName = settings.children[i]->name;
         categoryButton.setText(categoryName);
-        categoryButton.setBackgroundColor(GREY_4);
+        categoryButton.setBackgroundColor(Constants::GREY_4);
         categoryButton.setOnClick([this, categoryName, i]() {
             currentTab = i;
         });
@@ -35,24 +35,24 @@ void SettingsMenu::initialize(const Settings& settings) {
 }
 
 void SettingsMenu::initPersistentUI() {
-    background.setColor(GREY_3);
-    headerBackground.setColor(GREY_5);
-    footerBackground.setColor(GREY_5);
+    background.setColor(Constants::GREY_3);
+    headerBackground.setColor(Constants::GREY_5);
+    footerBackground.setColor(Constants::GREY_5);
 
     closeButton.setText("x");
-    closeButton.setBackgroundColor(GREY_7);
+    closeButton.setBackgroundColor(Constants::GREY_7);
     closeButton.setOnClick([this]() {
         isOpen = false;
     });
 
     applyButton.setText("Apply");
-    applyButton.setBackgroundColor(GREY_7);
+    applyButton.setBackgroundColor(Constants::GREY_7);
     applyButton.setOnClick([this]() {
         this->sc->save(readSettings());
     });
 
     cancelButton.setText("Cancel");
-    cancelButton.setBackgroundColor(GREY_7);
+    cancelButton.setBackgroundColor(Constants::GREY_7);
     cancelButton.setOnClick([this]() {
         isOpen = false;
     });
@@ -68,7 +68,7 @@ void SettingsMenu::initGuiElementsFor(Setting& setting, int categoryNum) {
         case SettingGuiElement::Stepper: {
             auto stepper = std::make_unique<Stepper>();
 
-            stepper->setColors(GREY_5, textColor);
+            stepper->setColors(Constants::GREY_5, textColor);
             stepper->setMinMax(setting.minValue, setting.maxValue);            
             stepper->setStepAmount((setting.maxValue - setting.minValue > 50) ? 10 : 1); // TODO
 
@@ -78,14 +78,14 @@ void SettingsMenu::initGuiElementsFor(Setting& setting, int categoryNum) {
         case SettingGuiElement::Toggle: {
             auto toggle = std::make_unique<Toggle>();
             
-            toggle->setColors(GREY_4, GREY_5);
+            toggle->setColors(Constants::GREY_4, Constants::GREY_5);
             settingGui.guiElement = std::move(toggle);
             break;
         }
         case SettingGuiElement::CycleButton: {
             auto cycleButton = std::make_unique<CycleButton>();
             
-            cycleButton->setBackgroundColor(GREY_5);
+            cycleButton->setBackgroundColor(Constants::GREY_5);
             cycleButton->setOptions(setting.options);
             settingGui.guiElement = std::move(cycleButton);
             break;

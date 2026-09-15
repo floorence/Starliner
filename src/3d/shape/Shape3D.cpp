@@ -38,8 +38,8 @@ void Shape3D::setTextures(AssetTexture* diffuse, AssetTexture* specular) {
     mesh.setTextures(textures);
 }
 
-void Shape3D::preDraw() {
-    Object3D::preDraw();
+void Shape3D::preDraw(Camera& camera) {
+    Object3D::preDraw(camera);
     if (!isLightSource) {
 		shader->setShininess(16); // TODO
         shader->setColorTint(tintColor);
@@ -47,7 +47,7 @@ void Shape3D::preDraw() {
 }
 
 void Shape3D::draw(Camera& camera) {
-    preDraw();
+    preDraw(camera);
     mesh.draw(camera, *shader);
 }
 

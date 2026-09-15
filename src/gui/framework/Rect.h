@@ -36,6 +36,8 @@ public:
     void centerHorizontally(float y, float w, float h, float start, float end);
     void centerVertically(float x, float w, float h, float start, float end);
     void center(float w, float h, float startX, float endX, float startY, float endY);
+    /** re-apply saved bounds, recalculating any unbound values */
+    void invalidateBounds();
 protected:
     float x = 0, y = 0, w = 0, h = 0;
     float specX = 0, specY = 0, specW = 0, specH = 0; // keep track of what public functions were called with
@@ -43,9 +45,6 @@ protected:
     Alignment alignment = Alignment::TopLeft;
     // set to true if subclass can handle unbound width and height at the same time
     bool enableUnboundWidthAndHeight = false;
-
-    /** re-apply saved bounds, recalculating any unbound values */
-    void invalidateBounds();
 private:
     std::string TAG = "Rect";
 

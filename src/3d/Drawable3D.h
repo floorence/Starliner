@@ -16,7 +16,7 @@ public:
     virtual void draw(Camera& camera) = 0;
     virtual void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) = 0;
 protected:
-    virtual void preDraw() {
+    virtual void preDraw(Camera&) {
         if (cullFacesBeforeDraw) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
     }
     virtual void preDrawToDepthMap(Shader&) {

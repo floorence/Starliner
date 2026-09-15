@@ -16,11 +16,15 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indi
 	setShapeData(vertices, indices);
 }
 
-glm::vec3 Mesh::getColor() {
+glm::vec4 Mesh::getColor() {
 	return material.color;
 }
 
 void Mesh::setColor(const glm::vec3 color) {
+	setColor(glm::vec4(color, 1.0f));
+}
+
+void Mesh::setColor(const glm::vec4 color) {
 	material.color = color;
 	material.colorSource = ColorSource::MaterialColor;
 }

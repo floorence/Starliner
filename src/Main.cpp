@@ -6,7 +6,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <fmt/format.h>
 
+#include "3d/shape/Skybox.h"
 #include "TestRoom.h"
+#include "gui/DebugMenu.h"
 #include "gui/Hud.h"
 #include "window/Window.h"
 #include "gui/framework/ClickController.h"
@@ -17,6 +19,7 @@
 #include "util/Log.h"
 #include "mass/Player.h"
 #include "world/World.h"
+#include "world/PlanetTextures.h"
 
 // initial window dimensions, which might not match what will be loaded from save
 const unsigned int width = 800;
@@ -110,14 +113,17 @@ int main() {
 
 	FontTexture fontTex("assets/pixel_operator_short_dollar.ttf");
 
-	Log::log(TAG, "textures initialized");
-
 	Globals::Font = &fontTex;
 	Globals::DefaultShader = &shader;
 	Globals::LightShader = &lightShader;
 	Globals::FlatShader = &flatShader;
 	Globals::GuiShader = &guiShader;
 	Globals::FontShader = &fontShader;
+
+	Globals::drawDebugVectors = false; // true;
+
+	PlanetTextures::init(true);
+	Log::log(TAG, "textures initialized");
 
 	TestRoom testRoom;
 	Log::log(TAG, "Test room initialized");
@@ -133,12 +139,28 @@ int main() {
 	SettingsMenu settingsMenu(&sc);
 	settingsMenu.setCorners(100, 100, width - 100, height - 100);
 
-	Hud hud(width, height, &settingsMenu);
+	DebugMenu debugMenu(&player);
+	debugMenu.setCorners(100, 100, width - 100, height - 100);
+
+	Hud hud(width, height);
 
 	LightController lc(fbWidth, fbHeight);
 	ClickController cc;
 
 	World world(67, &lc);
+	Skybox skybox;
+
+	// set button callbacks here since hud doesn't have access to the world and the menus, and it would be annoying to pass a bunch of stuff to it
+	hud.settingsButton.setOnClick([&settingsMenu]() {
+		Log::log("Hud", "settings button clicked");
+		settingsMenu.isOpen = !settingsMenu.isOpen;
+	});
+
+	hud.debugButton.setOnClick([&debugMenu, &world]() {
+		Log::log("Hud", "debug button clicked");
+		debugMenu.setStarSystems(world.getCloseStarSystems());
+		debugMenu.isOpen = !debugMenu.isOpen;
+	});
 
 	// set pointers used in glfw callbacks
 	windowPtr = &w;
@@ -147,14 +169,15 @@ int main() {
 	clickControllerPtr = &cc;
 
 	// register listeners, shapes, and drawables
-	w.registerListeners({&hud, &player, &settingsMenu});
+	w.registerListeners({&hud, &player, &settingsMenu, &debugMenu});
 
+	lc.registerDrawable(&skybox);
 	lc.registerDrawables(testRoom.objects);
 	lc.registerDrawable(&player);
 	lc.registerDrawable(&world);
 
 	sc.registerListeners({&settingsMenu, &lc, &player, &w});
-	cc.registerListeners({&hud, &settingsMenu});
+	cc.registerListeners({&hud, &settingsMenu, &debugMenu});
 
 	sc.load();
 	Log::log(TAG, "settings loaded from save");
@@ -180,6 +203,7 @@ int main() {
 		hud.draw();
 
 		if (settingsMenu.isOpen) settingsMenu.draw();
+		if (debugMenu.isOpen) debugMenu.draw();
 
 		glfwPollEvents();
 		// end frame here since glfwSwapBuffers() suspends when using vsync

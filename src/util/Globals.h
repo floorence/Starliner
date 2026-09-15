@@ -10,4 +10,6 @@ namespace Globals {
     inline Shader* DefaultShader;
     inline Shader* LightShader;
     inline Shader* FlatShader;
+
+    inline bool drawDebugVectors = true;
 }

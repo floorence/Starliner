@@ -4,6 +4,7 @@
 #include "lighting/LightController.h"
 #include "world/Region.h"
 #include "world/StarSystem.h"
+#include "world/random/WorldGen.h"
 #include <glm/ext/vector_float3.hpp>
 #include <memory>
 #include <vector>
@@ -16,12 +17,15 @@ public:
 
     void onPlayerPosition(glm::vec3 pos);
     void update(float deltaTime);
+    
+    // debug
     std::string getDebugString();
+    std::vector<StarSystem*> getCloseStarSystems();
 
     void draw(Camera& camera) override;
     void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 private:
-    uint seed;
+    WorldGen gen;
     LightController* lc;
     glm::vec3 playerPos = glm::vec3(0.0f);
     Region playerRegion;

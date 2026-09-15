@@ -3,9 +3,8 @@
 #include "util/Log.h"
 #include <algorithm>
 #include <memory>
-#include "GenRandom.h"
 
-World::World(uint seed, LightController* lc): seed(seed), lc(lc) {
+World::World(uint seed, LightController* lc): gen(seed), lc(lc) {
     playerRegion = {0, 0, 0};
     loadPlayerRegions();
 }
@@ -29,7 +28,9 @@ void World::onPlayerPosition(glm::vec3 pos) {
     int dy = newRegion.y - playerRegion.y;
     int dz = newRegion.z - playerRegion.z;
 
-    if (dx > 1 || dy > 1 || dz > 1) {
+    playerRegion = newRegion;
+
+    if (abs(dx) > 1 || abs(dy) > 1 || abs(dz) > 1) {
         // player must have teleported, ensure all regions around them are loaded
         loadPlayerRegions();
         return;
@@ -52,8 +53,6 @@ void World::onPlayerPosition(glm::vec3 pos) {
             }
         }
     }
-
-    playerRegion = newRegion;
 }
 
 void World::update(float deltaTime) {
@@ -87,6 +86,7 @@ void World::update(float deltaTime) {
                     }
                 } else {
                     Log::warn("World", fmt::format("tried to update a region {} {} {} that wasn't loaded!", r.x, r.y, r.z));
+                    throw(1);
                 }
             }
         }
@@ -104,6 +104,10 @@ std::string World::getDebugString() {
 	);
 }
 
+std::vector<StarSystem*> World::getCloseStarSystems() {
+    return cachedCloseStarSystems;
+}
+
 void World::draw(Camera& camera) {
     for (auto& starSystem: cachedCloseStarSystems) {
         starSystem->draw(camera);
@@ -117,6 +121,7 @@ void World::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 }
 
 void World::loadPlayerRegions() {
+    Log::log("World", fmt::format("loadPlayerRegions: playerRegion = {}, {}, {}", playerRegion.x, playerRegion.y, playerRegion.z));
     int r = simulationRadius;
     for (int x = playerRegion.x - r; x <= playerRegion.x + r; x++) {
         for (int y = playerRegion.y - r; y <= playerRegion.y + r; y++) {
@@ -134,7 +139,7 @@ void World::loadIfNotLoaded(Region region) {
     Log::log("World", fmt::format("loading..."));
     
     if (actuallyHasStarSystem(region)) {
-        auto starSystem = std::make_unique<StarSystem>(GenRandom::getRegionSeed(seed, region), region);
+        auto starSystem = std::make_unique<StarSystem>(gen.getRegionSeed(region), region);
         region.starSystem = starSystem.get();
         Log::log("World", fmt::format("star system at region {}, {}, {}, star pos: {}, {}, {}", region.x, region.y, region.z,
             starSystem->starLightData.position.x, starSystem->starLightData.position.y, starSystem->starLightData.position.z));
@@ -146,11 +151,11 @@ void World::loadIfNotLoaded(Region region) {
 }
 
 bool World::potentiallyHasStarSystem(Region region) {
-    return GenRandom::hash01(seed, region, 0) < 0.5;
+    return gen.hash01(region, 0) < 0.5;
 }
 
 double World::getPriority(Region region) {
-    return GenRandom::hash01(seed, region, 1);
+    return gen.hash01(region, 1);
 }
 
 bool World::actuallyHasStarSystem(Region region) {

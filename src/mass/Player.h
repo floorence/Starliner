@@ -14,6 +14,7 @@ public:
 
 	Camera* getActiveCamera();
 	std::string getDebugString() override;
+	void teleport(glm::vec3 newPos);
 	
 	// inputs
 	void handleKeyInputs(GLFWwindow* window, float deltaTime);

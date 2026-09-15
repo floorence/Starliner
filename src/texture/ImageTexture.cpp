@@ -5,20 +5,25 @@
 #include "util/Utils.h"
 #include <fmt/format.h>
 
-ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelType, bool convertToSpecular) {
+ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelType, bool convertToSpecular)
+	: AssetTexture((texType == TextureType::Diffuse) ? "material.diffuse" : "material.specular")
+{
 	type = texType;
-	uniform = (type == TextureType::Diffuse) ? "material.diffuse" : "material.specular";
 	path = image;
 
 	int widthImg, heightImg, numColCh;
 	stbi_set_flip_vertically_on_load(true);
 
 	unsigned char* bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, STBI_rgb_alpha); // force 4 colour channels
-	int realNumColCh = 4;
-	Log::log(TAG, fmt::format("loaded image; original colour channels: {}", numColCh));
+	if (!bytes) {
+		Log::err(TAG, fmt::format("Failed to load texture: {}", image));
+		stbi_image_free(bytes);
+		return;
+	}
 
+	int realNumColCh = 4;
 	if (texType == TextureType::Specular) {
-		Log::log(TAG, "specular texture");
+		// Log::log(TAG, "specular texture");
 		unsigned char* redChannel = new unsigned char[widthImg * heightImg];
 		for (int i = 0; i < widthImg * heightImg; i++) {
 			unsigned char r = bytes[i * realNumColCh + 0];
